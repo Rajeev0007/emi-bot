@@ -35,7 +35,7 @@ export default new Command({
       return `${MEDALS[i] ?? `**${i + 1}.**`} **${name}** — ${cat.field(e.value)}`;
     }));
     const c = new ContainerBuilder()
-      .addSectionComponents(new SectionBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# 🏆 Leaderboard — ${cat.label}`)))
+      .addTextDisplayComponents(new TextDisplayBuilder().setContent(`# 🏆 Leaderboard — ${cat.label}`))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))

@@ -55,14 +55,12 @@ export async function execute(interaction: ButtonInteraction, _client: Client): 
     const lines = items.map((i) => `${i.emoji} **${i.name}** — ${fmt.coins(i.price)}`);
 
     const container = new ContainerBuilder()
-      .addSectionComponents(
-        new SectionBuilder().addTextDisplayComponents(
+      .addTextDisplayComponents(
           new TextDisplayBuilder().setContent([
             `# ${E.SHOP} Shop Preview`,
             `Use \`/shop\` for the full shop.`,
           ].join('\n'))
         )
-      )
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')));
 

@@ -1,5 +1,5 @@
 import {
-  SlashCommandBuilder, MessageFlags, ContainerBuilder, SectionBuilder,
+  SlashCommandBuilder, MessageFlags, ContainerBuilder,
   TextDisplayBuilder, SeparatorBuilder, SeparatorSpacingSize,
   type ChatInputCommandInteraction,
 } from 'discord.js';
@@ -15,7 +15,7 @@ export default new Command({
     const ws  = interaction.client.ws.ping;
     const bar = (ms: number) => ms < 100 ? '🟢 Excellent' : ms < 200 ? '🟡 Good' : ms < 400 ? '🟠 Average' : '🔴 Poor';
     const c = new ContainerBuilder()
-      .addSectionComponents(new SectionBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent('# 🏓 Pong!')))
+      .addTextDisplayComponents(new TextDisplayBuilder().setContent('# 🏓 Pong!'))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent([
         `**Websocket Ping:** ${ws}ms — ${bar(ws)}`,

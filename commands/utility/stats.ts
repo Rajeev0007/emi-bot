@@ -24,7 +24,7 @@ export default new Command({
     const total  = Array.isArray(allU) ? allU.length : Object.keys(allU || {}).length;
     const upStr  = `${Math.floor(up / 86400)}d ${Math.floor((up % 86400) / 3600)}h ${Math.floor((up % 3600) / 60)}m ${Math.floor(up % 60)}s`;
     const c = new ContainerBuilder()
-      .addSectionComponents(new SectionBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent([`# ${config.bot.name} Statistics`, `Version ${config.bot.version} • Discord.js v14`].join('\n'))))
+      .addTextDisplayComponents(new TextDisplayBuilder().setContent([`# ${config.bot.name} Statistics`, `Version ${config.bot.version} • Discord.js v14`].join('\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent([
         '**🤖 Bot Info**', `> Guilds: **${guilds}**`, `> Cached Users: **${fmt.number(users)}**`, `> Uptime: **${upStr}**`, '',

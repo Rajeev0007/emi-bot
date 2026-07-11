@@ -28,7 +28,7 @@ export default new Command({
       const items      = config.shop.items;
       const categories = [...new Set(items.map((i) => i.category))];
       const container  = new ContainerBuilder()
-        .addSectionComponents(new SectionBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent('# 🏪 Item Shop')));
+        .addTextDisplayComponents(new TextDisplayBuilder().setContent('# 🏪 Item Shop'));
       container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true));
       for (const cat of categories) {
         const catItems = items.filter((i) => i.category === cat);

@@ -21,7 +21,7 @@ export default new Command({
     const imageUrl = await AnimeService.getWaifuImage(category);
     if (!imageUrl) return interaction.editReply({ ...CB.errorResponse('Failed', 'Could not fetch an image. Try again.') } as never);
     const c = new ContainerBuilder()
-      .addSectionComponents(new SectionBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${category.charAt(0).toUpperCase() + category.slice(1)}`)))
+      .addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${category.charAt(0).toUpperCase() + category.slice(1)}`))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Requested by ${interaction.user.username}`));
     const btn = new ActionRowBuilder<ButtonBuilder>().addComponents(

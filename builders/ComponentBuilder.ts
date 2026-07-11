@@ -20,12 +20,16 @@ export const sep   = (large = false) =>
 export const sepSmall = () => sep(false);
 export const sepLarge = () => sep(true);
 
-/* Section helper */
-export function section(lines: string | string[], thumbnailUrl?: string): SectionBuilder {
+/* Section helper — SectionBuilder requires an accessory (thumbnail or button) */
+export function section(lines: string | string[], thumbnailUrl?: string): SectionBuilder | TextDisplayBuilder {
   const content = Array.isArray(lines) ? lines.join('\n') : lines;
-  const s = new SectionBuilder().addTextDisplayComponents(text(content));
-  if (thumbnailUrl) s.setThumbnailAccessory(new ThumbnailBuilder().setURL(thumbnailUrl));
-  return s;
+  if (thumbnailUrl) {
+    return new SectionBuilder()
+      .addTextDisplayComponents(text(content))
+      .setThumbnailAccessory(new ThumbnailBuilder().setURL(thumbnailUrl));
+  }
+  // No accessory — return TextDisplayBuilder instead (SectionBuilder requires accessory)
+  return text(content);
 }
 
 /* Gallery helper */
@@ -59,19 +63,21 @@ export function row(...buttons: ButtonBuilder[]): ActionRowBuilder<ButtonBuilder
 }
 
 /* Pre-built responses */
-export function headerSection(title: string, subtitle?: string, avatarUrl?: string): SectionBuilder {
+export function headerSection(title: string, subtitle?: string, avatarUrl?: string): SectionBuilder | TextDisplayBuilder {
   const lines = [`# ${title}`];
   if (subtitle) lines.push(subtitle);
   return section(lines, avatarUrl);
 }
 
 export function errorResponse(title: string, description: string): { components: ContainerBuilder[] } {
-  const container = new ContainerBuilder().addSectionComponents(section([`# ${title}`, description]));
+  const container = new ContainerBuilder()
+    .addTextDisplayComponents(text(`# ${title}\n${description}`));
   return { components: [container] };
 }
 
 export function successResponse(title: string, description: string): { components: ContainerBuilder[] } {
-  const container = new ContainerBuilder().addSectionComponents(section([`# ${title}`, description]));
+  const container = new ContainerBuilder()
+    .addTextDisplayComponents(text(`# ${title}\n${description}`));
   return { components: [container] };
 }
 
@@ -80,9 +86,8 @@ export function cooldownResponse(command: string, remainingMs: number): { compon
   const mins = Math.floor(secs / 60);
   const s    = secs % 60;
   const time = mins > 0 ? `${mins}m ${s}s` : `${s}s`;
-  const container = new ContainerBuilder().addSectionComponents(
-    section([`# ${E.COOLDOWN} Slow Down!`, `You can use \`/${command}\` again in **${time}**.`])
-  );
+  const container = new ContainerBuilder()
+    .addTextDisplayComponents(text(`# ${E.COOLDOWN} Slow Down!\nYou can use \`/${command}\` again in **${time}**.`));
   return { components: [container] };
 }
 

@@ -23,7 +23,7 @@ export default new Command({
       return `${MEDALS[i] ?? `**${i + 1}.**`} **${name}** — ${fmt.coins(entry.value)}`;
     }));
     const c = new ContainerBuilder()
-      .addSectionComponents(new SectionBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent('# 🏆 Richest Players')))
+      .addTextDisplayComponents(new TextDisplayBuilder().setContent('# 🏆 Richest Players'))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))

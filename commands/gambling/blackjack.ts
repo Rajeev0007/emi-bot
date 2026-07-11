@@ -31,7 +31,7 @@ function buildContainer(pHand: Card[], dHand: Card[], bet: number, wallet: numbe
   const dCards = hideDealer ? [`${dHand[0].val}${dHand[0].suit}`, '🂠'] : dHand.map(c => `${c.val}${c.suit}`);
   const dv = hideDealer ? cardValue(dHand[0]) : handValue(dHand);
   return new ContainerBuilder()
-    .addSectionComponents(new SectionBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent([`# ${E.CARDS} Blackjack`, status].join('\n'))))
+    .addTextDisplayComponents(new TextDisplayBuilder().setContent([`# ${E.CARDS} Blackjack`, status].join('\n')))
     .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
     .addTextDisplayComponents(new TextDisplayBuilder().setContent([
       `**Dealer** — ${hideDealer ? `${dv}+?` : dv}`, `> ${dCards.join('  ')}`, '',
