@@ -65,17 +65,17 @@ export function headerSection(title: string, subtitle?: string, avatarUrl?: stri
   return section(lines, avatarUrl);
 }
 
-export function errorResponse(title: string, description: string): { components: ContainerBuilder[]; flags: number } {
+export function errorResponse(title: string, description: string): { components: ContainerBuilder[] } {
   const container = new ContainerBuilder().addSectionComponents(section([`# ${title}`, description]));
-  return { components: [container], flags: (MessageFlags.IsComponentsV2 as number) | (MessageFlags.Ephemeral as number) };
+  return { components: [container] };
 }
 
-export function successResponse(title: string, description: string): { components: ContainerBuilder[]; flags: number } {
+export function successResponse(title: string, description: string): { components: ContainerBuilder[] } {
   const container = new ContainerBuilder().addSectionComponents(section([`# ${title}`, description]));
-  return { components: [container], flags: MessageFlags.IsComponentsV2 as number };
+  return { components: [container] };
 }
 
-export function cooldownResponse(command: string, remainingMs: number): { components: ContainerBuilder[]; flags: number } {
+export function cooldownResponse(command: string, remainingMs: number): { components: ContainerBuilder[] } {
   const secs = Math.ceil(remainingMs / 1000);
   const mins = Math.floor(secs / 60);
   const s    = secs % 60;
@@ -83,7 +83,7 @@ export function cooldownResponse(command: string, remainingMs: number): { compon
   const container = new ContainerBuilder().addSectionComponents(
     section([`# ${E.COOLDOWN} Slow Down!`, `You can use \`/${command}\` again in **${time}**.`])
   );
-  return { components: [container], flags: (MessageFlags.IsComponentsV2 as number) | (MessageFlags.Ephemeral as number) };
+  return { components: [container] };
 }
 
 export function navRow(homeId = 'nav_home', closeId = 'nav_close'): ActionRowBuilder<ButtonBuilder> {

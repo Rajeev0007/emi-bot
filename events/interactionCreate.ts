@@ -11,6 +11,8 @@ import logger       from '../utils/Logger';
 import cooldowns    from '../managers/CooldownManager';
 import * as CB      from '../builders/ComponentBuilder';
 
+const V2_EPHEMERAL = (MessageFlags.IsComponentsV2 as number) | (MessageFlags.Ephemeral as number);
+
 export default new Event({
   name: 'interactionCreate',
   async execute(interaction: Interaction, client: Client & { commands?: Collection<string, Command>; interactionHandler?: { handle: (i: Interaction) => Promise<void> } }) {
@@ -32,7 +34,6 @@ export default new Event({
         await client.interactionHandler?.handle(interaction);
       } catch (err) {
         logger.error(`[interactionCreate] Interaction handler error:`, (err as Error).message);
-        // Try to respond so Discord doesn't show "This interaction failed"
         try {
           const i = interaction as any;
           if (!i.replied && !i.deferred) {
@@ -59,25 +60,28 @@ export default new Event({
 
     // Guard: guild-only
     if (command.guildOnly && !guild) {
-      await cmdInteraction.reply(
-        CB.errorResponse('Server Only', 'This command can only be used inside a server.') as any,
-      ).catch(() => {});
+      await cmdInteraction.reply({
+        ...CB.errorResponse('Server Only', 'This command can only be used inside a server.'),
+        flags: V2_EPHEMERAL,
+      } as any).catch(() => {});
       return;
     }
 
     // Guard: owner-only
     if (command.ownerOnly && !config.owners.includes(userId)) {
-      await cmdInteraction.reply(
-        CB.errorResponse('Owner Only', 'This command is restricted to bot owners.') as any,
-      ).catch(() => {});
+      await cmdInteraction.reply({
+        ...CB.errorResponse('Owner Only', 'This command is restricted to bot owners.'),
+        flags: V2_EPHEMERAL,
+      } as any).catch(() => {});
       return;
     }
 
     // Guard: maintenance
     if (command.maintenance) {
-      await cmdInteraction.reply(
-        CB.errorResponse('Maintenance', 'This command is temporarily disabled.') as any,
-      ).catch(() => {});
+      await cmdInteraction.reply({
+        ...CB.errorResponse('Maintenance', 'This command is temporarily disabled.'),
+        flags: V2_EPHEMERAL,
+      } as any).catch(() => {});
       return;
     }
 
@@ -86,9 +90,10 @@ export default new Event({
       const member = cmdInteraction.member as { permissions?: { has: (p: string) => boolean } } | null;
       const missing = command.permissions.filter((p) => !member?.permissions?.has(p));
       if (missing.length) {
-        await cmdInteraction.reply(
-          CB.errorResponse('Missing Permissions', `You need: ${missing.join(', ')}`) as any,
-        ).catch(() => {});
+        await cmdInteraction.reply({
+          ...CB.errorResponse('Missing Permissions', `You need: ${missing.join(', ')}`),
+          flags: V2_EPHEMERAL,
+        } as any).catch(() => {});
         return;
       }
     }
@@ -104,9 +109,10 @@ export default new Event({
       const duration = command.cooldown ?? config.cooldowns[cdKey] ?? config.cooldowns[command.name] ?? 3000;
       const { onCooldown, remaining } = cooldowns.check(userId, command.name);
       if (onCooldown) {
-        await cmdInteraction.reply(
-          CB.cooldownResponse(command.name, remaining) as any,
-        ).catch(() => {});
+        await cmdInteraction.reply({
+          ...CB.cooldownResponse(command.name, remaining),
+          flags: V2_EPHEMERAL,
+        } as any).catch(() => {});
         return;
       }
       cooldowns.set(userId, command.name, duration);
@@ -123,13 +129,16 @@ export default new Event({
       const errContent = `Something went wrong.\n\`\`\`${(err as Error).message.slice(0, 200)}\`\`\``;
       try {
         if (cmdInteraction.replied || cmdInteraction.deferred) {
-          await cmdInteraction.followUp(
-            CB.errorResponse('Unexpected Error', errContent) as any,
-          );
+          // After deferReply with IsComponentsV2, followUp needs its own flags
+          await cmdInteraction.followUp({
+            ...CB.errorResponse('Unexpected Error', errContent),
+            flags: V2_EPHEMERAL,
+          } as any);
         } else {
-          await cmdInteraction.reply(
-            CB.errorResponse('Unexpected Error', errContent) as any,
-          );
+          await cmdInteraction.reply({
+            ...CB.errorResponse('Unexpected Error', errContent),
+            flags: V2_EPHEMERAL,
+          } as any);
         }
       } catch (replyErr) {
         logger.error(`[interactionCreate] Failed to send error reply:`, (replyErr as Error).message);

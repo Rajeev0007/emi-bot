@@ -84,7 +84,6 @@ export function createSocialCommand(
 
       const replyOpts: Record<string, unknown> = {
         components: [container],
-        flags:      MessageFlags.IsComponentsV2,
       };
       if (gifUrl) replyOpts.files = [{ attachment: gifUrl, name: `${action}.gif` }];
 
