@@ -1,0 +1,70 @@
+/**
+ * @file index.ts
+ * @description Main entry point. Bootstraps the Discord client and all handlers.
+ */
+
+import 'dotenv/config';
+import { Client, GatewayIntentBits, Partials, Collection } from 'discord.js';
+import config             from './config/config';
+import logger             from './utils/Logger';
+import musicManager       from './managers/MusicManager';
+import CommandHandler      from './handlers/CommandHandler';
+import EventHandler        from './handlers/EventHandler';
+import InteractionHandler  from './handlers/InteractionHandler';
+import { Command }         from './structures/Command';
+
+if (!config.token)    { logger.error('DISCORD_TOKEN is not set. Exiting.'); process.exit(1); }
+if (!config.clientId) { logger.error('DISCORD_CLIENT_ID is not set. Exiting.'); process.exit(1); }
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.DirectMessages,
+  ],
+  partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember],
+  allowedMentions: { parse: ['users', 'roles'], repliedUser: true },
+});
+
+// Extend client
+(client as unknown as { commands: Collection<string, Command> }).commands = new Collection();
+(client as unknown as { musicManager: typeof musicManager }).musicManager = musicManager;
+const interactionHandler = new InteractionHandler(client);
+(client as unknown as { interactionHandler: InteractionHandler }).interactionHandler = interactionHandler;
+
+client.once('ready', () => {
+  try { musicManager.init(client); }
+  catch (err) { logger.error('[Startup] Failed to initialise music manager:', (err as Error).message); }
+});
+
+const commandHandler = new CommandHandler(client);
+const eventHandler   = new EventHandler(client);
+
+commandHandler.load();
+eventHandler.load();
+interactionHandler.load();
+
+process.on('unhandledRejection', (reason) => {
+  logger.error('[Process] Unhandled Promise Rejection:', (reason as Error)?.message ?? reason);
+});
+process.on('uncaughtException', (err) => {
+  logger.error('[Process] Uncaught Exception:', err.message);
+  logger.debug(err.stack ?? '');
+});
+
+const shutdown = async (signal: string) => {
+  logger.info(`[Process] Received ${signal} — shutting down gracefully…`);
+  client.destroy();
+  process.exit(0);
+};
+process.on('SIGINT',  () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+logger.info('[Startup] Connecting to Discord…');
+client.login(config.token).catch((err) => {
+  logger.error('[Startup] Login failed:', (err as Error).message);
+  process.exit(1);
+});

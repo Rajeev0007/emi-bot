@@ -1,0 +1,13 @@
+{
+  "588982544545087498": {
+    "slots": {
+      "wins": 3,
+      "losses": 1,
+      "totalWon": 0
+    },
+    "coinflip": {
+      "wins": 1,
+      "totalWon": 500
+    }
+  }
+}
