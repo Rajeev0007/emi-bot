@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, type ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Command } from '../../structures/Command';
 import music       from '../../managers/MusicManager';
 import { musicSuccess } from '../../utils/MusicUtil';
@@ -7,7 +7,7 @@ export default new Command({
   data: new SlashCommandBuilder().setName('autoplay').setDescription('Toggle autoplay — queues a related track when the queue runs out.'),
   category: 'music',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const enabled = music.toggleAutoplay(interaction.guild!.id);
     const session = music.getSession(interaction.guild!.id);
     if (session) session.autoplay = enabled;

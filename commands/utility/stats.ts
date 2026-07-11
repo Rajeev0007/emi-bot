@@ -14,7 +14,7 @@ export default new Command({
   data: new SlashCommandBuilder().setName('stats').setDescription('View bot statistics and info.'),
   category: 'utility', cooldown: 10_000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const client = interaction.client;
     const guilds = client.guilds.cache.size;
     const users  = client.users.cache.size;
@@ -33,6 +33,6 @@ export default new Command({
       ].join('\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${config.bot.name} v${config.bot.version}`));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

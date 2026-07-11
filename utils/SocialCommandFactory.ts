@@ -35,7 +35,7 @@ export function createSocialCommand(
     cooldown: 3000,
 
     async execute(interaction) {
-      await interaction.deferReply();
+      await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
       const target  = interaction.options.get('user')?.user;
       const message = interaction.options.get('message')?.value as string | null;
 

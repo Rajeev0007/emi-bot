@@ -47,7 +47,7 @@ export async function execute(interaction: ButtonInteraction): Promise<void> {
         `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`,
         `${E.BANK} **Bank:** ${fmt.coins(eco.bank)}`,
       ].join('\n')));
-    await interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [container] });
     return;
   }
 
@@ -74,7 +74,7 @@ export async function execute(interaction: ButtonInteraction): Promise<void> {
         `${E.WALLET} **Wallet:** ${fmt.coins(ecoAfter.wallet)}`,
         `${E.BANK} **Bank:** ${fmt.coins(ecoAfter.bank)}`,
       ].join('\n')));
-    await interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [container] });
     return;
   }
 
@@ -104,5 +104,5 @@ export async function execute(interaction: ButtonInteraction): Promise<void> {
       `${E.PRESTIGE} **Prestige:** ${user.prestige ?? 0}`,
     ].join('\n')));
 
-  await interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 as any });
+  await interaction.editReply({ components: [container] });
 }

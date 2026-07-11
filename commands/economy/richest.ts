@@ -13,7 +13,7 @@ export default new Command({
   data: new SlashCommandBuilder().setName('richest').setDescription('View the wealthiest users by net worth.'),
   category: 'economy', cooldown: 5000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const lb = await UserManager.getLeaderboard('netWorth', 10);
     if (!lb.length) return interaction.editReply({ ...CB.errorResponse('No Data', 'No economy data found yet.') } as never);
     const lines = await Promise.all(lb.map(async (entry, i) => {
@@ -28,6 +28,6 @@ export default new Command({
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent('-# Updated just now • Rankings based on wallet + bank'));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

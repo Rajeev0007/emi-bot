@@ -25,7 +25,7 @@ export default new Command({
     .addNumberOption((o) => o.setName('cashout').setDescription('Auto cash-out multiplier (e.g. 2.0)').setMinValue(1.01).setMaxValue(100)),
   category: 'gambling',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { wallet } = await UserManager.getBalance(interaction.user.id);
     const bet         = fmt.parseAmount(interaction.options.get('bet')!.value as string, wallet);
     const autoCashout = interaction.options.get('cashout')?.value as number | null ?? null;
@@ -50,7 +50,7 @@ export default new Command({
     const cashoutBtn = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder().setCustomId(`crash_cashout:${interaction.user.id}`).setLabel('Cash Out!').setStyle(ButtonStyle.Success).setEmoji('💰'),
     );
-    const msg = await interaction.editReply({ components: [buildC(currentMult, '🚀 Rocket is climbing… Cash out before it crashes!'), cashoutBtn], flags: MessageFlags.IsComponentsV2 as any });
+    const msg = await interaction.editReply({ components: [buildC(currentMult, '🚀 Rocket is climbing… Cash out before it crashes!'), cashoutBtn] });
     const collector = (msg as { createMessageComponentCollector: (o: { filter: (i: { user: { id: string }; customId: string }) => boolean; time: number; max: number }) => { on: (e: string, cb: (...a: unknown[]) => void) => void; stop: (r?: string) => void } }).createMessageComponentCollector({
       filter: (i) => i.user.id === interaction.user.id && i.customId.startsWith('crash_'), time: 20_000, max: 1,
     });
@@ -78,7 +78,7 @@ export default new Command({
       const c = buildC(crashed ? crashPoint : cashoutMult ?? 1, status);
       c.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
         .addTextDisplayComponents(new TextDisplayBuilder().setContent(`${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`));
-      await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any }).catch(() => {});
+      await interaction.editReply({ components: [c] }).catch(() => {});
     });
   },
 });

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, PermissionsBitField, type ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, PermissionsBitField, type ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Command }   from '../../structures/Command';
 import music         from '../../managers/MusicManager';
 import { formatDuration, musicError, musicSuccess, buildSearchQuery } from '../../utils/MusicUtil';
@@ -13,7 +13,7 @@ export default new Command({
   category: 'music',
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { member, guild } = interaction as { member: { voice?: { channel?: unknown } }; guild: { id: string; channels: { cache: Map<string, { id: string }> }; members: { me: unknown } } };
 
     let voiceChannel = (member.voice?.channel as { id: string; permissionsFor?: (m: unknown) => { has: (f: unknown) => boolean } } | undefined);

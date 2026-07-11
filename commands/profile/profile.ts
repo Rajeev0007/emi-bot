@@ -13,7 +13,7 @@ export default new Command({
     .addUserOption((o) => o.setName('user').setDescription('User to view')),
   category: 'profile', cooldown: 5000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const target = interaction.options.get('user')?.user ?? interaction.user;
     const [user, eco] = await Promise.all([UserManager.getUser(target.id, interaction.guild?.id), UserManager.getEconomy(target.id)]);
     const xpNeeded = UserManager.xpNeeded(user.level + 1);
@@ -28,6 +28,6 @@ export default new Command({
       .addMediaGalleryComponents(new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL('attachment://profile.png')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(false))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(target.id === interaction.user.id ? '-# Your profile card' : `-# ${target.username}'s profile`));
-    await interaction.editReply({ files: [attachment], components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ files: [attachment], components: [c] });
   },
 });

@@ -23,7 +23,7 @@ export default new Command({
     .addStringOption((o) => o.setName('bet').setDescription('Amount to bet').setRequired(true)),
   category: 'gambling',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const choice = interaction.options.get('choice')!.value as string;
     const { wallet } = await UserManager.getBalance(interaction.user.id);
     const bet = fmt.parseAmount(interaction.options.get('bet')!.value as string, wallet);
@@ -32,7 +32,7 @@ export default new Command({
     if (bet > wallet) return interaction.editReply({ ...CB.errorResponse('Insufficient Funds', `You only have ${fmt.coins(wallet)}.`) } as never);
 
     for (const f of FRAMES) {
-      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${f}`))], flags: MessageFlags.IsComponentsV2 as any });
+      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${f}`))] });
       await sleep(500);
     }
 
@@ -56,6 +56,6 @@ export default new Command({
         `${E.COINFLIP} **Your Choice:** ${choice}`, `${E.COINFLIP} **Result:** ${result}`,
         `${E.COINS} **${won ? 'Won' : 'Lost'}:** ${fmt.coins(bet)}`, `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`,
       ].join('\n')));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

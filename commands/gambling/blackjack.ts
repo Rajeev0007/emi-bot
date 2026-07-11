@@ -46,7 +46,7 @@ export default new Command({
     .addStringOption((o) => o.setName('bet').setDescription('Amount to bet').setRequired(true)),
   category: 'gambling',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { wallet } = await UserManager.getBalance(interaction.user.id);
     const bet = fmt.parseAmount(interaction.options.get('bet')!.value as string, wallet);
     if (!bet || bet < config.gambling.minBet || bet > config.gambling.maxBet)
@@ -67,7 +67,7 @@ export default new Command({
       else             { txt = `# Dealer has Blackjack. You lose ${fmt.coins(bet)}.`; }
       if (payout > 0) await UserManager.addWallet(interaction.user.id, payout);
       const fe = await UserManager.getEconomy(interaction.user.id);
-      return interaction.editReply({ components: [buildContainer(player, dealer, bet, fe.wallet, txt, false)], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [buildContainer(player, dealer, bet, fe.wallet, txt, false)] });
     }
 
     const gs = { player, dealer, deck, bet, userId: interaction.user.id };
@@ -77,7 +77,7 @@ export default new Command({
       new ButtonBuilder().setCustomId(`bj_double:${interaction.user.id}`).setLabel('Double Down').setStyle(ButtonStyle.Danger).setEmoji('💰').setDisabled(eco0.wallet < bet),
     );
 
-    const msg = await interaction.editReply({ components: [buildContainer(player, dealer, bet, eco0.wallet, '**Your turn.** Hit or Stand?', true), btns()], flags: MessageFlags.IsComponentsV2 as any });
+    const msg = await interaction.editReply({ components: [buildContainer(player, dealer, bet, eco0.wallet, '**Your turn.** Hit or Stand?', true), btns()] });
     const collector = (msg as { createMessageComponentCollector: (o: { filter: (i: { user: { id: string }; customId: string }) => boolean; time: number }) => { on: (e: string, cb: (i: { customId: string; update: (o: unknown) => Promise<void>; reply: (o: unknown) => Promise<void> }) => void) => void; stop: () => void } }).createMessageComponentCollector({
       filter: (i) => i.user.id === interaction.user.id && i.customId.startsWith('bj_'), time: 60_000,
     });
@@ -98,7 +98,7 @@ export default new Command({
       await gamblingDB.ensure(gs.userId, { blackjack: { wins: 0, losses: 0 } });
       if (won) await gamblingDB.add(`${gs.userId}.blackjack.wins`, 1); else await gamblingDB.add(`${gs.userId}.blackjack.losses`, 1);
       const fe = await UserManager.getEconomy(gs.userId);
-      await i.update({ components: [buildContainer(fp, fd, gs.bet, fe.wallet, resultMsg, false)], flags: MessageFlags.IsComponentsV2 as any });
+      await i.update({ components: [buildContainer(fp, fd, gs.bet, fe.wallet, resultMsg, false)] });
     };
 
     const dealerPlay = (d: Card[], dk: Card[]) => { while (handValue(d) < config.gambling.blackjack.dealerStandsAt) d.push(dk.pop()!); return d; };
@@ -109,7 +109,7 @@ export default new Command({
         gs.player.push(gs.deck.pop()!);
         if (handValue(gs.player) > 21) { await endGame(i, gs.player, gs.dealer, 'bust'); return; }
         const e2 = await UserManager.getEconomy(interaction.user.id);
-        await i.update({ components: [buildContainer(gs.player, gs.dealer, gs.bet, e2.wallet, '**Hit or Stand?**', true), btns()], flags: MessageFlags.IsComponentsV2 as any });
+        await i.update({ components: [buildContainer(gs.player, gs.dealer, gs.bet, e2.wallet, '**Hit or Stand?**', true), btns()] });
       } else if (action === 'bj_stand') {
         await endGame(i, gs.player, dealerPlay([...gs.dealer], gs.deck), 'stand');
       } else if (action === 'bj_double') {

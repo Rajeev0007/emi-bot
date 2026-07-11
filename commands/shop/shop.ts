@@ -22,7 +22,7 @@ export default new Command({
       .addIntegerOption((o) => o.setName('quantity').setDescription('Quantity').setMinValue(1).setMaxValue(99))),
   category: 'shop', cooldown: 3000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const sub = (interaction.options as { getSubcommand: () => string }).getSubcommand();
     if (sub === 'browse') {
       const items      = config.shop.items;
@@ -37,7 +37,7 @@ export default new Command({
         container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true));
       }
       container.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# Use `/shop buy <item_id>` to purchase'));
-      return interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [container] });
     }
     if (sub === 'buy') {
       const itemId = (interaction.options.get('item')!.value as string).toLowerCase();
@@ -64,7 +64,7 @@ export default new Command({
           `${item.emoji} **${item.name}:** ${current}x in inventory`,
           `${E.WALLET} **Remaining wallet:** ${fmt.coins(eco.wallet)}`,
         ].join('\n')));
-      return interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [c] });
     }
   },
 });

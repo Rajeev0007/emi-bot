@@ -16,7 +16,7 @@ export default new Command({
       .addChoices(...CATS.map((c) => ({ name: c, value: c })))),
   category: 'anime', cooldown: 3000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const category = (interaction.options.get('category')?.value as string) ?? 'waifu';
     const imageUrl = await AnimeService.getWaifuImage(category);
     if (!imageUrl) return interaction.editReply({ ...CB.errorResponse('Failed', 'Could not fetch an image. Try again.') } as never);
@@ -27,6 +27,6 @@ export default new Command({
     const btn = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder().setCustomId(`waifu_reroll:${interaction.user.id}:${category}`).setLabel('Reroll').setStyle(ButtonStyle.Secondary).setEmoji('🔄'),
     );
-    await interaction.editReply({ components: [c, btn], files: [imageUrl], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c, btn], files: [imageUrl] });
   },
 });

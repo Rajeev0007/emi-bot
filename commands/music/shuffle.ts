@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, type ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Command } from '../../structures/Command';
 import music       from '../../managers/MusicManager';
 import { musicCheck, musicError, musicSuccess } from '../../utils/MusicUtil';
@@ -7,7 +7,7 @@ export default new Command({
   data: new SlashCommandBuilder().setName('shuffle').setDescription('Shuffle the upcoming tracks in the queue.'),
   category: 'music',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { error, session, player } = musicCheck(interaction, music, { needsQueue: true });
     if (error) return interaction.editReply(musicError(error) as never);
     if (session!.queueList.length < 2)

@@ -35,7 +35,7 @@ export default new Command({
     .addStringOption((o) => o.setName('bet').setDescription('Amount to bet').setRequired(true)),
   category: 'gambling',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { wallet } = await UserManager.getBalance(interaction.user.id);
     const bet = fmt.parseAmount(interaction.options.get('bet')!.value as string, wallet);
     if (!bet || bet < config.gambling.minBet || bet > config.gambling.maxBet)
@@ -46,7 +46,6 @@ export default new Command({
     const { symbols } = config.gambling.slots;
     const frame = (r1: string, r2: string, r3: string, status: string) => ({
       components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${status}\n\`\`\`\n ${r1} ${r2} ${r3} \n\`\`\``))],
-      flags: MessageFlags.IsComponentsV2 as any,
     });
 
     await interaction.editReply(frame('🎰', '🎰', '🎰', 'Spinning…'));
@@ -83,6 +82,6 @@ export default new Command({
     const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder().setCustomId(`slots_spin:${interaction.user.id}:${bet}`).setLabel('Spin Again').setStyle(ButtonStyle.Primary).setEmoji('🎰'),
     );
-    await interaction.editReply({ components: [c, buttons], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c, buttons] });
   },
 });

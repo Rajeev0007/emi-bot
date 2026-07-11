@@ -88,11 +88,11 @@ export function musicCheck(
 export function musicError(msg: string) {
   const container = new ContainerBuilder()
     .addTextDisplayComponents(new TextDisplayBuilder().setContent(String(msg)));
-  return { components: [container], flags: MessageFlags.IsComponentsV2 as any as number, ephemeral: true };
+  return { components: [container], flags: MessageFlags.IsComponentsV2 as any, ephemeral: true };
 }
 
 export function musicSuccess(msg: string) {
   const container = new ContainerBuilder()
     .addTextDisplayComponents(new TextDisplayBuilder().setContent(msg));
-  return { components: [container], flags: MessageFlags.IsComponentsV2 as any as number };
+  return { components: [container], flags: MessageFlags.IsComponentsV2 as any };
 }

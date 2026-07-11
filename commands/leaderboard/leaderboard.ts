@@ -23,7 +23,7 @@ export default new Command({
       .addChoices(...CATS.map((c) => ({ name: c.label, value: c.id })))),
   category: 'leaderboard', cooldown: 5000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const catId = (interaction.options.get('category')?.value as string) ?? CATS[0].id;
     const cat   = CATS.find((c) => c.id === catId) ?? CATS[0];
     const entries = await UserManager.getLeaderboard(cat.id, 10);
@@ -40,6 +40,6 @@ export default new Command({
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent('-# Updated just now'));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

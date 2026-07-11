@@ -62,7 +62,6 @@ export async function execute(interaction: ButtonInteraction): Promise<void> {
   const { symbols } = config.gambling.slots;
   const frame = (r1: string, r2: string, r3: string, status: string) => ({
     components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${status}\n\`\`\`\n ${r1} ${r2} ${r3} \n\`\`\``))],
-    flags: MessageFlags.IsComponentsV2 as any,
   });
 
   await interaction.editReply(frame('🎰', '🎰', '🎰', 'Spinning…'));
@@ -99,5 +98,5 @@ export async function execute(interaction: ButtonInteraction): Promise<void> {
   const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder().setCustomId(`slots_spin:${interaction.user.id}:${bet}`).setLabel('Spin Again').setStyle(ButtonStyle.Primary).setEmoji('🎰'),
   );
-  await interaction.editReply({ components: [c, buttons], flags: MessageFlags.IsComponentsV2 as any });
+  await interaction.editReply({ components: [c, buttons] });
 }

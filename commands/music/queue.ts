@@ -74,7 +74,7 @@ export default new Command({
   category: 'music',
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { error, session } = musicCheck(interaction, music, { needsQueue: true });
     if (error) return interaction.editReply(musicError(error) as never);
     const page = interaction.options.get('page')?.value as number ?? 1;

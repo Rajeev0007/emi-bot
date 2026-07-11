@@ -13,7 +13,7 @@ export default new Command({
     .addStringOption((o) => o.setName('query').setDescription('Anime title').setRequired(true)),
   category: 'anime', cooldown: 5000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const query   = interaction.options.get('query')!.value as string;
     const results = await AnimeService.searchAnime(query);
     if (!results?.length) return interaction.editReply({ ...CB.errorResponse('Not Found', `No anime found for **${query}**.`) } as never);
@@ -35,6 +35,6 @@ export default new Command({
     const btns = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder().setLabel('View on MAL').setStyle(ButtonStyle.Link).setURL(anime.url).setEmoji('🔗'),
     );
-    await interaction.editReply({ components: [c, btns], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c, btns] });
   },
 });

@@ -28,7 +28,7 @@ export default new Command({
     .addSubcommand((s) => s.setName('reset').setDescription('Reset all branding settings.')),
   category: 'utility',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     if (!interaction.guild) return interaction.editReply({ ...CB.errorResponse('Server Only', 'Use in a server.') } as never);
     const sub     = (interaction.options as { getSubcommand: () => string }).getSubcommand();
     const guildId = interaction.guild.id;
@@ -53,34 +53,34 @@ export default new Command({
       return c;
     };
 
-    if (sub === 'view') return interaction.editReply({ components: [buildView()], flags: MessageFlags.IsComponentsV2 as any });
+    if (sub === 'view') return interaction.editReply({ components: [buildView()] });
     if (sub === 'nickname') {
       const name = (interaction.options.get('name')?.value as string) ?? null;
       try { await interaction.guild.members.me!.setNickname(name); } catch (e) { logger.warn('[botbrand] nickname:', (e as Error).message); }
       await guildsDB.set(`${guildId}.branding.nickname`, name);
-      return interaction.editReply({ components: [buildView()], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [buildView()] });
     }
     if (sub === 'avatar') {
       const url = (interaction.options.get('url')?.value as string) ?? null;
       if (url && !isImageUrl(url)) return interaction.editReply({ ...CB.errorResponse('Invalid URL', 'Provide a direct image URL.') } as never);
       branding.avatarUrl = url; await guildsDB.set(`${guildId}.branding.avatarUrl`, url);
-      return interaction.editReply({ components: [buildView()], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [buildView()] });
     }
     if (sub === 'banner') {
       const url = (interaction.options.get('url')?.value as string) ?? null;
       if (url && !isImageUrl(url)) return interaction.editReply({ ...CB.errorResponse('Invalid URL', 'Provide a direct image URL.') } as never);
       branding.bannerUrl = url; await guildsDB.set(`${guildId}.branding.bannerUrl`, url);
-      return interaction.editReply({ components: [buildView()], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [buildView()] });
     }
     if (sub === 'about') {
       const text = (interaction.options.get('text')?.value as string) ?? null;
       branding.about = text; await guildsDB.set(`${guildId}.branding.about`, text);
-      return interaction.editReply({ components: [buildView()], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [buildView()] });
     }
     if (sub === 'reset') {
       await guildsDB.set(`${guildId}.branding`, { nickname: null, avatarUrl: null, bannerUrl: null, about: null });
       try { await interaction.guild.members.me!.setNickname(null); } catch { /* ignore */ }
-      return interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent('✅ All branding reset.'))], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent('✅ All branding reset.'))] });
     }
   },
 });

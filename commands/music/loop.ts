@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, type ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Command } from '../../structures/Command';
 import music       from '../../managers/MusicManager';
 import { musicCheck, musicError, musicSuccess } from '../../utils/MusicUtil';
@@ -12,7 +12,7 @@ export default new Command({
         .addChoices({ name: 'Off', value: 'off' }, { name: 'Track', value: 'track' }, { name: 'Queue', value: 'queue' })),
   category: 'music',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { error, session, player } = musicCheck(interaction, music, { needsQueue: true });
     if (error) return interaction.editReply(musicError(error) as never);
     const mode = interaction.options.get('mode')!.value as 'off' | 'track' | 'queue';

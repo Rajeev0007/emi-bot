@@ -19,17 +19,17 @@ export default new Command({
   data: new SlashCommandBuilder().setName('crime').setDescription('Attempt a crime for big rewards — but you might get caught! (30 min cooldown)'),
   category: 'economy',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const result = await EconomyManager.crime(interaction.user.id);
     const av = interaction.user.displayAvatarURL({ size: 256 });
     if (!result.success && 'remaining' in result && result.remaining) {
       const c = new ContainerBuilder().addSectionComponents(new SectionBuilder().addTextDisplayComponents(
         new TextDisplayBuilder().setContent([`# ${E.COOLDOWN} Laying Low`, `Return ${fmt.relativeTime(Date.now() + result.remaining)}.`].join('\n'))
       ).setThumbnailAccessory(new ThumbnailBuilder().setURL(av)));
-      return interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [c] });
     }
     for (const frame of FRAMES) {
-      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# Committing Crime\n> ${frame}`))], flags: MessageFlags.IsComponentsV2 as any });
+      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# Committing Crime\n> ${frame}`))] });
       await sleep(500);
     }
     const eco = await UserManager.getEconomy(interaction.user.id);
@@ -43,7 +43,7 @@ export default new Command({
           `${E.COINS} **Stolen:** ${fmt.coins(result.amount)}`, `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`,
           '', `-# Next crime ${fmt.relativeTime(Date.now() + config.cooldowns.crime)}`,
         ].join('\n')));
-      return interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [c] });
     }
     const fine = 'fine' in result ? result.fine : 0;
     const c = new ContainerBuilder()
@@ -52,6 +52,6 @@ export default new Command({
       ).setThumbnailAccessory(new ThumbnailBuilder().setURL(av)))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent([`${E.COINS} **Fine:** -${fmt.coins(fine)}`, `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`].join('\n')));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

@@ -15,7 +15,7 @@ export default new Command({
   data: new SlashCommandBuilder().setName('daily').setDescription('Claim your daily coins reward (resets every 24 hours).'),
   category: 'economy', cooldown: 5000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const result = await EconomyManager.daily(interaction.user.id);
     if (!result.success) {
       const container = new ContainerBuilder().addSectionComponents(
@@ -23,7 +23,7 @@ export default new Command({
           new TextDisplayBuilder().setContent([`# ${E.COOLDOWN} Already Claimed`, `Come back in **${fmt.duration(result.remaining)}**.`].join('\n'))
         ).setThumbnailAccessory(new ThumbnailBuilder().setURL(interaction.user.displayAvatarURL({ size: 256 })))
       );
-      return interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [container] });
     }
     const eco    = await UserManager.getEconomy(interaction.user.id);
     const streak = eco.dailyStreak ?? 1;
@@ -47,6 +47,6 @@ export default new Command({
       new ButtonBuilder().setCustomId('nav_balance').setLabel('View Balance').setStyle(ButtonStyle.Secondary).setEmoji('👛'),
       new ButtonBuilder().setCustomId('nav_shop').setLabel('Visit Shop').setStyle(ButtonStyle.Primary).setEmoji('🏪'),
     );
-    await interaction.editReply({ components: [container, buttons], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [container, buttons] });
   },
 });

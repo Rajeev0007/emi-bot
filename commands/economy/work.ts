@@ -17,7 +17,7 @@ export default new Command({
   data: new SlashCommandBuilder().setName('work').setDescription('Work at a random job to earn coins. (1 hour cooldown)'),
   category: 'economy',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const result = await EconomyManager.work(interaction.user.id);
     if (!result.success) {
       const c = new ContainerBuilder().addSectionComponents(
@@ -25,10 +25,10 @@ export default new Command({
           new TextDisplayBuilder().setContent([`# ${E.COOLDOWN} Still Working`, `Come back ${fmt.relativeTime(Date.now() + result.remaining)}.`].join('\n'))
         ).setThumbnailAccessory(new ThumbnailBuilder().setURL(interaction.user.displayAvatarURL({ size: 256 })))
       );
-      return interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [c] });
     }
     for (const frame of FRAMES) {
-      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${E.WORK} Working\n> ${frame}`))], flags: MessageFlags.IsComponentsV2 as any });
+      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${E.WORK} Working\n> ${frame}`))] });
       await sleep(500);
     }
     const eco = await UserManager.getEconomy(interaction.user.id);
@@ -43,6 +43,6 @@ export default new Command({
         `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`, '',
         `-# Next shift available ${fmt.relativeTime(Date.now() + config.cooldowns.work)}`,
       ].join('\n')));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

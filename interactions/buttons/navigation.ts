@@ -45,7 +45,7 @@ export async function execute(interaction: ButtonInteraction, _client: Client): 
         xpBar,
       ].join('\n')));
 
-    await interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [container] });
     return;
   }
 
@@ -66,7 +66,7 @@ export async function execute(interaction: ButtonInteraction, _client: Client): 
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')));
 
-    await interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [container] });
     return;
   }
 
@@ -76,7 +76,7 @@ export async function execute(interaction: ButtonInteraction, _client: Client): 
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(
         `# ${E.HOME} Home\nUse slash commands to interact with the bot. Try \`/help\` for a list of commands.`
       ));
-    await interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [container] });
     return;
   }
 

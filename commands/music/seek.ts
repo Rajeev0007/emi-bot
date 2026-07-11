@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, type ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Command } from '../../structures/Command';
 import music       from '../../managers/MusicManager';
 import { musicCheck, musicError, musicSuccess, formatDuration } from '../../utils/MusicUtil';
@@ -19,7 +19,7 @@ export default new Command({
     .addStringOption((o) => o.setName('position').setDescription('Time (e.g. 1:30 or 90)').setRequired(true)),
   category: 'music',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { error, session, player } = musicCheck(interaction, music, { needsPlaying: true });
     if (error) return interaction.editReply(musicError(error) as never);
     const info = (session!.current?.info ?? {}) as { isSeekable?: boolean; isStream?: boolean; length?: number };

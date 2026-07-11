@@ -32,7 +32,7 @@ export default new Command({
     .addSubcommand((s) => s.setName('train').setDescription('Train your pet')),
   category: 'pets', cooldown: 3000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const sub = (interaction.options as { getSubcommand: () => string }).getSubcommand();
     const av  = interaction.user.displayAvatarURL({ size: 256 });
 
@@ -52,7 +52,7 @@ export default new Command({
       const c = new ContainerBuilder().addSectionComponents(new SectionBuilder().addTextDisplayComponents(
         new TextDisplayBuilder().setContent([`# You adopted ${type.emoji} **${name}**!`, 'Remember to feed and play daily!'].join('\n'))
       ).setThumbnailAccessory(new ThumbnailBuilder().setURL(av)));
-      return interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [c] });
     }
 
     const pet = await petsDB.get(`${interaction.user.id}.pet`) as PetData | null;
@@ -77,7 +77,7 @@ export default new Command({
         .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
         .addTextDisplayComponents(new TextDisplayBuilder().setContent('```\n' + bars.join('\n') + '\n```'))
         .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Adopted ${fmt.fullTime(pet.adoptedAt)}`));
-      return interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [c] });
     }
 
     if (sub === 'feed') {

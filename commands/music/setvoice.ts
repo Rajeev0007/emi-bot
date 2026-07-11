@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, type ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, type ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Command } from '../../structures/Command';
 import music       from '../../managers/MusicManager';
 import { musicError, musicSuccess } from '../../utils/MusicUtil';
@@ -13,7 +13,7 @@ export default new Command({
         .addChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice)),
   category: 'music',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const channel = interaction.options.get('channel')?.channel as { id: string; permissionsFor?: (m: unknown) => { has: (f: bigint) => boolean } } | null;
     if (!channel) {
       music.setLockedChannel(interaction.guild!.id, null);

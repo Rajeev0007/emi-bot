@@ -19,7 +19,7 @@ export default new Command({
     .addStringOption((o) => o.setName('bet').setDescription('Amount to bet').setRequired(true)),
   category: 'gambling',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { wallet } = await UserManager.getBalance(interaction.user.id);
     const bet = fmt.parseAmount(interaction.options.get('bet')!.value as string, wallet);
     if (!bet || bet < config.gambling.minBet || bet > config.gambling.maxBet)
@@ -27,7 +27,7 @@ export default new Command({
     if (bet > wallet) return interaction.editReply({ ...CB.errorResponse('Broke', `You only have ${fmt.coins(wallet)}.`) } as never);
 
     for (let i = 0; i < 3; i++) {
-      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# Rolling the dice…\n**You:** ${DICE_FACES[Math.floor(Math.random()*6)]}  ·  **House:** ${DICE_FACES[Math.floor(Math.random()*6)]}`) )], flags: MessageFlags.IsComponentsV2 as any });
+      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# Rolling the dice…\n**You:** ${DICE_FACES[Math.floor(Math.random()*6)]}  ·  **House:** ${DICE_FACES[Math.floor(Math.random()*6)]}`) )] });
       await sleep(400);
     }
 
@@ -52,6 +52,6 @@ export default new Command({
         tie ? `${E.COINS} **Bet returned:** ${fmt.coins(bet)}` : won ? `${E.WIN} **Won:** ${fmt.coins(bet)}` : `${E.LOSE} **Lost:** ${fmt.coins(bet)}`,
         `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`,
       ].join('\n')));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

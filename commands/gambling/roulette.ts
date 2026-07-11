@@ -43,7 +43,7 @@ export default new Command({
     .addIntegerOption((o) => o.setName('number').setDescription('Number (0-36) if betting exact').setMinValue(0).setMaxValue(36)),
   category: 'gambling',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const betType   = interaction.options.get('bet_type')!.value as string;
     const numChoice = interaction.options.get('number')?.value as number | null ?? null;
     if (betType === 'number' && numChoice === null)
@@ -56,7 +56,7 @@ export default new Command({
 
     for (const f of FRAMES) {
       const passing = Array.from({ length: 5 }, () => fmt.randomInt(0, 36)).join('  ');
-      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# Roulette\n${f}\n> \`${passing}\``))], flags: MessageFlags.IsComponentsV2 as any });
+      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# Roulette\n${f}\n> \`${passing}\``))] });
       await sleep(500);
     }
 
@@ -83,6 +83,6 @@ export default new Command({
         won ? `${E.WIN} **Payout:** ${fmt.coins(payout)} (${mult}x)` : `${E.LOSE} **Lost:** ${fmt.coins(bet)}`,
         `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`,
       ].join('\n')));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

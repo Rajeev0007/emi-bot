@@ -16,7 +16,7 @@ export default new Command({
     .addStringOption((o) => o.setName('amount').setDescription('Amount (number, "all", or "half")').setRequired(true)),
   category: 'economy', cooldown: 3000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { bank } = await UserManager.getBalance(interaction.user.id);
     const parsed   = fmt.parseAmount(interaction.options.get('amount')!.value as string, bank);
     if (!parsed || parsed <= 0) return interaction.editReply({ ...CB.errorResponse('Invalid Amount', 'Please provide a valid positive amount.') } as never);
@@ -32,6 +32,6 @@ export default new Command({
       ).setThumbnailAccessory(new ThumbnailBuilder().setURL(interaction.user.displayAvatarURL({ size: 256 }))))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent([`${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`, `${E.BANK} **Bank:** ${fmt.coins(eco.bank)}`].join('\n')));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

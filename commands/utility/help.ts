@@ -59,16 +59,16 @@ export default new Command({
       .addChoices(...Object.keys(CATEGORIES).map((k) => ({ name: k, value: k })))),
   category: 'utility', cooldown: 3000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     let active = (interaction.options.get('category')?.value as string) ?? 'home';
     const container = active === 'home' ? buildOverview() : buildCategory(active, CATEGORIES[active]);
-    const msg = await interaction.editReply({ components: [container, ...catButtons(active)], flags: MessageFlags.IsComponentsV2 as any });
+    const msg = await interaction.editReply({ components: [container, ...catButtons(active)] });
     const collector = (msg as { createMessageComponentCollector: (o: { filter: (i: { user: { id: string }; customId: string }) => boolean; time: number }) => { on: (e: string, cb: (i: { customId: string; update: (o: unknown) => Promise<void> }) => void) => void } }).createMessageComponentCollector({
       filter: (i) => i.user.id === interaction.user.id && (i.customId.startsWith('help_cat:') || i.customId === 'help_home'), time: 120_000,
     });
     collector.on('collect', async (i) => {
-      if (i.customId === 'help_home') { active = 'home'; await i.update({ components: [buildOverview(), ...catButtons('home')], flags: MessageFlags.IsComponentsV2 as any }); }
-      else { active = i.customId.split(':')[1]; await i.update({ components: [buildCategory(active, CATEGORIES[active]), ...catButtons(active)], flags: MessageFlags.IsComponentsV2 as any }); }
+      if (i.customId === 'help_home') { active = 'home'; await i.update({ components: [buildOverview(), ...catButtons('home')] }); }
+      else { active = i.customId.split(':')[1]; await i.update({ components: [buildCategory(active, CATEGORIES[active]), ...catButtons(active)] }); }
     });
   },
 });

@@ -17,7 +17,7 @@ export default new Command({
     .addStringOption((o) => o.setName('amount').setDescription('Amount (number, "all", or "half")').setRequired(true)),
   category: 'economy', cooldown: 5000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const target = interaction.options.get('user')!.user!;
     if (target.id === interaction.user.id) return interaction.editReply({ ...CB.errorResponse('Invalid Target', 'You cannot transfer to yourself.') } as never);
     if (target.bot)                         return interaction.editReply({ ...CB.errorResponse('Invalid Target', 'You cannot transfer to bots.') } as never);
@@ -36,6 +36,6 @@ export default new Command({
       ).setThumbnailAccessory(new ThumbnailBuilder().setURL(target.displayAvatarURL({ size: 256 }))))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent([`**Your Wallet:** ${fmt.coins(sEco.wallet)}`, `**${target.username}'s Wallet:** ${fmt.coins(rEco.wallet)}`].join('\n')));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

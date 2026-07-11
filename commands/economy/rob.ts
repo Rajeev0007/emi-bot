@@ -19,7 +19,7 @@ export default new Command({
     .addUserOption((o) => o.setName('target').setDescription('Who to rob').setRequired(true)),
   category: 'economy',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const target = interaction.options.get('target')!.user!;
     if (target.id === interaction.user.id) return interaction.editReply({ ...CB.errorResponse('Invalid Target', 'You cannot rob yourself.') } as never);
     if (target.bot)                         return interaction.editReply({ ...CB.errorResponse('Invalid Target', 'Bots carry no coins!') } as never);
@@ -29,13 +29,13 @@ export default new Command({
       const c = new ContainerBuilder().addSectionComponents(new SectionBuilder().addTextDisplayComponents(
         new TextDisplayBuilder().setContent([`# ${E.COOLDOWN} Laying Low`, `Cops are watching. Return ${fmt.relativeTime(Date.now() + result.remaining)}.`].join('\n'))
       ).setThumbnailAccessory(new ThumbnailBuilder().setURL(av)));
-      return interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [c] });
     }
     if (!result.success && 'reason' in result && result.reason === 'too_poor')
       return interaction.editReply({ ...CB.errorResponse('Broke Target', `${target.username} doesn't have enough coins (min ${fmt.coins(config.economy.robMinWallet)}).`) } as never);
     const frames = [`🔍 Locating **${target.username}**…`, '🤫 Sneaking up…', '💨 Making your move…'];
     for (const f of frames) {
-      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# Robbery in Progress\n> ${f}`))], flags: MessageFlags.IsComponentsV2 as any });
+      await interaction.editReply({ components: [new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent(`# Robbery in Progress\n> ${f}`))] });
       await sleep(550);
     }
     const eco = await UserManager.getEconomy(interaction.user.id);
@@ -46,7 +46,7 @@ export default new Command({
         ).setThumbnailAccessory(new ThumbnailBuilder().setURL(av)))
         .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
         .addTextDisplayComponents(new TextDisplayBuilder().setContent([`${E.COINS} **Stolen:** ${fmt.coins(result.stolen)}`, `${E.WALLET} **Your Wallet:** ${fmt.coins(eco.wallet)}`].join('\n')));
-      return interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+      return interaction.editReply({ components: [c] });
     }
     const fine = 'fine' in result ? result.fine : 0;
     const c = new ContainerBuilder()
@@ -55,6 +55,6 @@ export default new Command({
       ).setThumbnailAccessory(new ThumbnailBuilder().setURL(av)))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent([`${E.COINS} **Fine Paid:** ${fmt.coins(fine ?? 0)}`, `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`].join('\n')));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

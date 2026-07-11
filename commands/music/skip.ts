@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, type ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Command } from '../../structures/Command';
 import music       from '../../managers/MusicManager';
 import { musicCheck, musicError, musicSuccess } from '../../utils/MusicUtil';
@@ -10,7 +10,7 @@ export default new Command({
     .addIntegerOption((o) => o.setName('amount').setDescription('Number of tracks to skip').setMinValue(1).setMaxValue(100)),
   category: 'music',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const { error, session, player } = musicCheck(interaction, music, { needsPlaying: true });
     if (error) return interaction.editReply(musicError(error) as never);
     const amount = Math.min(interaction.options.get('amount')?.value as number ?? 1, session!.queueList.length + 1);

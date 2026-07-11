@@ -16,7 +16,7 @@ export default new Command({
     .addUserOption((o) => o.setName('user').setDescription('User whose inventory to view')),
   category: 'inventory', cooldown: 3000,
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const target = interaction.options.get('user')?.user ?? interaction.user;
     const inv    = (await inventoryDB.get(target.id)) as Record<string, number> | null;
     if (!inv || Object.keys(inv).length === 0)
@@ -36,6 +36,6 @@ export default new Command({
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${lines.length} unique item(s)`));
-    await interaction.editReply({ components: [c], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [c] });
   },
 });

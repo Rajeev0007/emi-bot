@@ -17,7 +17,7 @@ export default new Command({
     .addUserOption((o) => o.setName('user').setDescription("Check another user's balance.")),
   category: 'economy',
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
     const target = interaction.options.get('user')?.user ?? interaction.user;
     const isSelf = target.id === interaction.user.id;
     const [eco, user] = await Promise.all([UserManager.getEconomy(target.id), UserManager.getUser(target.id, interaction.guild?.id)]);
@@ -58,7 +58,7 @@ export default new Command({
       new ButtonBuilder().setCustomId(`balance_refresh:${target.id}`).setLabel('Refresh').setStyle(ButtonStyle.Secondary).setEmoji('🔄'),
     );
 
-    await interaction.editReply({ components: [container, buttons], flags: MessageFlags.IsComponentsV2 as any });
+    await interaction.editReply({ components: [container, buttons] });
     await UserManager.grantAchievement(target.id, 'first_balance').catch(() => {});
   },
 });
