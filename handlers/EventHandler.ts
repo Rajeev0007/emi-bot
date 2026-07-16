@@ -18,7 +18,7 @@ export default class EventHandler {
 
   load(): void {
     const eventsPath = path.join(__dirname, '../events');
-    const files      = fs.readdirSync(eventsPath).filter((f) => f.endsWith('.js'));
+    const files      = fs.readdirSync(eventsPath).filter((f) => f.endsWith('.ts'));
     let count = 0;
 
     for (const file of files) {

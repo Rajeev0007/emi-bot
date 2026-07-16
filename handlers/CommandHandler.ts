@@ -29,7 +29,7 @@ export default class CommandHandler {
       const catPath = path.join(commandsPath, category);
       if (!fs.statSync(catPath).isDirectory()) continue;
 
-      const files = fs.readdirSync(catPath).filter((f) => f.endsWith('.js'));
+      const files = fs.readdirSync(catPath).filter((f) => f.endsWith('.ts'));
 
       for (const file of files) {
         const filePath = path.join(catPath, file);

@@ -25,7 +25,7 @@ interface RawCommand {
   nsfw?: boolean;
 }
 
-// ── Load local commands from dist/commands/ ───────────────────────────────────
+// ── Load local commands from commands/ ────────────────────────────────────────
 function loadLocal(commandsDir: string): Map<string, RawCommand> {
   const map = new Map<string, RawCommand>();
   if (!fs.existsSync(commandsDir)) return map;
@@ -35,7 +35,7 @@ function loadLocal(commandsDir: string): Map<string, RawCommand> {
   );
 
   for (const cat of categories) {
-    const files = fs.readdirSync(path.join(commandsDir, cat)).filter((f) => f.endsWith('.js'));
+    const files = fs.readdirSync(path.join(commandsDir, cat)).filter((f) => f.endsWith('.ts'));
     for (const file of files) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports

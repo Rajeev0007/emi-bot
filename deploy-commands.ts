@@ -38,7 +38,7 @@ if (mode !== 'clear-guild') {
   );
 
   for (const category of categories) {
-    const files = fs.readdirSync(path.join(commandsPath, category)).filter((f) => f.endsWith('.js'));
+    const files = fs.readdirSync(path.join(commandsPath, category)).filter((f) => f.endsWith('.ts'));
     for (const file of files) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports

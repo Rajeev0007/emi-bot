@@ -41,7 +41,7 @@ export default class InteractionHandler {
   private _loadDir(subdir: string, map: Map<string, InteractionModule>): void {
     const dir = path.join(__dirname, '../interactions', subdir);
     if (!fs.existsSync(dir)) return;
-    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.js'));
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.ts'));
     for (const file of files) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
