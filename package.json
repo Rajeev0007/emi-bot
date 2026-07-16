@@ -7,7 +7,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsc --watch & node --watch dist/index.js",
-    "deploy": "tsc && node dist/deploy-commands.js",
+    "deploy": "tsc && node dist/deploy-commands.js global",
+    "deploy:guild": "tsc && node dist/deploy-commands.js guild",
+    "deploy:clear-guild": "tsc && node dist/deploy-commands.js clear-guild",
     "typecheck": "tsc --noEmit",
     "setup": "npm install && npm run build"
   },
