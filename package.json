@@ -4,7 +4,7 @@
   "description": "Itsuki Bot — Premium Discord Economy Bot",
   "main": "index.ts",
   "scripts": {
-    "start": "tsx index.ts",
+    "start": "node start.js",
     "dev": "tsx watch index.ts",
     "deploy": "tsx deploy-commands.ts global",
     "deploy:guild": "tsx deploy-commands.ts guild",
