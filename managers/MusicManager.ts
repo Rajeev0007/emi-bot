@@ -214,14 +214,15 @@ class MusicManager {
     const loopNext  = session.loop === 'off' ? 'track' : session.loop === 'track' ? 'queue' : 'off';
     const loopLabel = loopNext === 'off' ? 'Loop Off' : loopNext === 'track' ? 'Loop: Track' : 'Loop: Queue';
 
-    const controls = new ActionRowBuilder().addComponents(
+    const controls = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder().setCustomId(`music_pause:${guildId}`).setLabel(player?.paused ? 'Resume' : 'Pause').setEmoji(player?.paused ? '▶️' : '⏸️').setStyle(ButtonStyle.Secondary),
       new ButtonBuilder().setCustomId(`music_skip:${guildId}`).setLabel('Skip').setEmoji('⏭️').setStyle(ButtonStyle.Secondary),
       new ButtonBuilder().setCustomId(`music_loop:${guildId}`).setLabel(loopLabel).setEmoji('🔁').setStyle(ButtonStyle.Secondary),
       new ButtonBuilder().setCustomId(`music_stop:${guildId}`).setLabel('Stop').setEmoji('⏹️').setStyle(ButtonStyle.Danger),
     );
 
-    return { components: [container, controls], flags: MessageFlags.IsComponentsV2 as any };
+    container.addActionRowComponents(controls);
+    return { components: [container], flags: MessageFlags.IsComponentsV2 as any };
   }
 
   _simpleComponents(content: string): { components: unknown[]; flags: number } {

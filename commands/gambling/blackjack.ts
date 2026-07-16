@@ -77,7 +77,7 @@ export default new Command({
       new ButtonBuilder().setCustomId(`bj_double:${interaction.user.id}`).setLabel('Double Down').setStyle(ButtonStyle.Danger).setEmoji('💰').setDisabled(eco0.wallet < bet),
     );
 
-    const msg = await interaction.editReply({ components: [buildContainer(player, dealer, bet, eco0.wallet, '**Your turn.** Hit or Stand?', true), btns()] });
+    const msg = await interaction.editReply({ components: [buildContainer(player, dealer, bet, eco0.wallet, '**Your turn.** Hit or Stand?', true).addActionRowComponents(btns())] });
     const collector = (msg as { createMessageComponentCollector: (o: { filter: (i: { user: { id: string }; customId: string }) => boolean; time: number }) => { on: (e: string, cb: (i: { customId: string; update: (o: unknown) => Promise<void>; reply: (o: unknown) => Promise<void> }) => void) => void; stop: () => void } }).createMessageComponentCollector({
       filter: (i) => i.user.id === interaction.user.id && i.customId.startsWith('bj_'), time: 60_000,
     });
@@ -109,7 +109,7 @@ export default new Command({
         gs.player.push(gs.deck.pop()!);
         if (handValue(gs.player) > 21) { await endGame(i, gs.player, gs.dealer, 'bust'); return; }
         const e2 = await UserManager.getEconomy(interaction.user.id);
-        await i.update({ components: [buildContainer(gs.player, gs.dealer, gs.bet, e2.wallet, '**Hit or Stand?**', true), btns()] });
+        await i.update({ components: [buildContainer(gs.player, gs.dealer, gs.bet, e2.wallet, '**Hit or Stand?**', true).addActionRowComponents(btns())] });
       } else if (action === 'bj_stand') {
         await endGame(i, gs.player, dealerPlay([...gs.dealer], gs.deck), 'stand');
       } else if (action === 'bj_double') {

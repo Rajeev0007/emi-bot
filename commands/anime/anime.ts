@@ -32,9 +32,11 @@ export default new Command({
       ].join('\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# MAL ID: ${anime.mal_id} • Rank: #${anime.rank ?? '?'}`));
-    const btns = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setLabel('View on MAL').setStyle(ButtonStyle.Link).setURL(anime.url).setEmoji('🔗'),
+    c.addActionRowComponents(
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder().setLabel('View on MAL').setStyle(ButtonStyle.Link).setURL(anime.url).setEmoji('🔗'),
+      ),
     );
-    await interaction.editReply({ components: [c, btns] });
+    await interaction.editReply({ components: [c] });
   },
 });

@@ -71,7 +71,13 @@ export default new Command({
       new ButtonBuilder().setCustomId(`mines_cashout:${interaction.user.id}`).setLabel(`Cash Out (${cashoutMult.toFixed(2)}x)`).setStyle(ButtonStyle.Success).setEmoji('💰'),
     );
 
-    const msg = await interaction.editReply({ components: [buildInfo(), ...buildRows(), cashoutRow()] });
+    const assembleGame = (info: ContainerBuilder, rows: ReturnType<typeof buildRows>, cashout?: ReturnType<typeof cashoutRow>) => {
+      for (const r of rows) info.addActionRowComponents(r);
+      if (cashout) info.addActionRowComponents(cashout);
+      return info;
+    };
+
+    const msg = await interaction.editReply({ components: [assembleGame(buildInfo(), buildRows(), cashoutRow())] });
     const collector = (msg as { createMessageComponentCollector: (o: { filter: (i: { user: { id: string }; customId: string }) => boolean; time: number }) => { on: (e: string, cb: (i: { customId: string; update: (o: unknown) => Promise<void> }) => void) => void } }).createMessageComponentCollector({
       filter: (i) => i.user.id === interaction.user.id && (i.customId.startsWith('mines_tile:') || i.customId.startsWith('mines_cashout:')), time: 120_000,
     });
@@ -86,7 +92,7 @@ export default new Command({
         await UserManager.incrementStat(interaction.user.id, 'gamesWon');
         const eco = await UserManager.getEconomy(interaction.user.id);
         const c = new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent([`# 💰 Cashed Out!`, `You cashed out **${cashoutMult.toFixed(2)}x** and won **${fmt.coins(payout - bet)}**!`, `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`].join('\n')));
-        await i.update({ components: [c, ...buildRows(true)] });
+        await i.update({ components: [assembleGame(c, buildRows(true))] });
         return;
       }
       const idx = parseInt(idxStr);
@@ -95,12 +101,12 @@ export default new Command({
         await UserManager.incrementStat(interaction.user.id, 'gamesPlayed');
         const eco = await UserManager.getEconomy(interaction.user.id);
         const c = new ContainerBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent([`# 💥 BOOM! You hit a mine!`, `Lost **${fmt.coins(bet)}**!`, `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`].join('\n')));
-        await i.update({ components: [c, ...buildRows(true)] });
+        await i.update({ components: [assembleGame(c, buildRows(true))] });
         return;
       }
       revealed.add(idx);
       cashoutMult = calcMult(revealed.size, mines);
-      await i.update({ components: [buildInfo(), ...buildRows(), cashoutRow()] });
+      await i.update({ components: [assembleGame(buildInfo(), buildRows(), cashoutRow())] });
     });
   },
 });

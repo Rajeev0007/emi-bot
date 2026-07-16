@@ -50,7 +50,7 @@ export default new Command({
     const cashoutBtn = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder().setCustomId(`crash_cashout:${interaction.user.id}`).setLabel('Cash Out!').setStyle(ButtonStyle.Success).setEmoji('💰'),
     );
-    const msg = await interaction.editReply({ components: [buildC(currentMult, '🚀 Rocket is climbing… Cash out before it crashes!'), cashoutBtn] });
+    const msg = await interaction.editReply({ components: [buildC(currentMult, '🚀 Rocket is climbing… Cash out before it crashes!').addActionRowComponents(cashoutBtn)] });
     const collector = (msg as { createMessageComponentCollector: (o: { filter: (i: { user: { id: string }; customId: string }) => boolean; time: number; max: number }) => { on: (e: string, cb: (...a: unknown[]) => void) => void; stop: (r?: string) => void } }).createMessageComponentCollector({
       filter: (i) => i.user.id === interaction.user.id && i.customId.startsWith('crash_'), time: 20_000, max: 1,
     });

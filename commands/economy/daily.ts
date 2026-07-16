@@ -43,10 +43,12 @@ export default new Command({
       ].filter(Boolean).join('\n')))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Next daily available ${fmt.relativeTime(Date.now() + config.cooldowns.daily)}`));
-    const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setCustomId('nav_balance').setLabel('View Balance').setStyle(ButtonStyle.Secondary).setEmoji('👛'),
-      new ButtonBuilder().setCustomId('nav_shop').setLabel('Visit Shop').setStyle(ButtonStyle.Primary).setEmoji('🏪'),
+    container.addActionRowComponents(
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder().setCustomId('nav_balance').setLabel('View Balance').setStyle(ButtonStyle.Secondary).setEmoji('👛'),
+        new ButtonBuilder().setCustomId('nav_shop').setLabel('Visit Shop').setStyle(ButtonStyle.Primary).setEmoji('🏪'),
+      ),
     );
-    await interaction.editReply({ components: [container, buttons] });
+    await interaction.editReply({ components: [container] });
   },
 });

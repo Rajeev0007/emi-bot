@@ -52,13 +52,14 @@ export default new Command({
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Use \`/deposit\` to move coins to your bank | \`/daily\` for free rewards`));
 
-    const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setCustomId(`balance_deposit:${target.id}`).setLabel('Deposit').setStyle(ButtonStyle.Primary).setEmoji('📥'),
-      new ButtonBuilder().setCustomId(`balance_withdraw:${target.id}`).setLabel('Withdraw').setStyle(ButtonStyle.Secondary).setEmoji('📤'),
-      new ButtonBuilder().setCustomId(`balance_refresh:${target.id}`).setLabel('Refresh').setStyle(ButtonStyle.Secondary).setEmoji('🔄'),
+    container.addActionRowComponents(
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder().setCustomId(`balance_deposit:${target.id}`).setLabel('Deposit').setStyle(ButtonStyle.Primary).setEmoji('📥'),
+        new ButtonBuilder().setCustomId(`balance_withdraw:${target.id}`).setLabel('Withdraw').setStyle(ButtonStyle.Secondary).setEmoji('📤'),
+        new ButtonBuilder().setCustomId(`balance_refresh:${target.id}`).setLabel('Refresh').setStyle(ButtonStyle.Secondary).setEmoji('🔄'),
+      ),
     );
-
-    await interaction.editReply({ components: [container, buttons] });
+    await interaction.editReply({ components: [container] });
     await UserManager.grantAchievement(target.id, 'first_balance').catch(() => {});
   },
 });

@@ -79,9 +79,11 @@ export default new Command({
         won ? `${E.WIN} **Payout:** ${fmt.coins(payout)} (${(payout / bet).toFixed(1)}x)` : `${E.LOSE} **Lost:** ${fmt.coins(bet)}`,
         `${E.WALLET} **Wallet:** ${fmt.coins(eco.wallet)}`,
       ].join('\n')));
-    const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setCustomId(`slots_spin:${interaction.user.id}:${bet}`).setLabel('Spin Again').setStyle(ButtonStyle.Primary).setEmoji('🎰'),
+    c.addActionRowComponents(
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder().setCustomId(`slots_spin:${interaction.user.id}:${bet}`).setLabel('Spin Again').setStyle(ButtonStyle.Primary).setEmoji('🎰'),
+      ),
     );
-    await interaction.editReply({ components: [c, buttons] });
+    await interaction.editReply({ components: [c] });
   },
 });

@@ -24,9 +24,11 @@ export default new Command({
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${category.charAt(0).toUpperCase() + category.slice(1)}`))
       .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
       .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Requested by ${interaction.user.username}`));
-    const btn = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setCustomId(`waifu_reroll:${interaction.user.id}:${category}`).setLabel('Reroll').setStyle(ButtonStyle.Secondary).setEmoji('🔄'),
+    c.addActionRowComponents(
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder().setCustomId(`waifu_reroll:${interaction.user.id}:${category}`).setLabel('Reroll').setStyle(ButtonStyle.Secondary).setEmoji('🔄'),
+      ),
     );
-    await interaction.editReply({ components: [c, btn], files: [imageUrl] });
+    await interaction.editReply({ components: [c], files: [imageUrl] });
   },
 });

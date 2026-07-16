@@ -30,11 +30,13 @@ export default new Command({
         '**What you lose:**', `> Level ${user.level} → Level 1`, `> Wallet reset to ${fmt.coins(config.economy.startingBalance)}`,
         '', '**What you gain:**', `> Prestige ${next} badge`, `> +${bonusPct}% permanent earnings bonus`,
       ].join('\n')));
-    const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setCustomId(`prestige_confirm:${interaction.user.id}`).setLabel(`Prestige ${next}`).setStyle(ButtonStyle.Danger).setEmoji('🔄'),
-      new ButtonBuilder().setCustomId('prestige_cancel').setLabel('Cancel').setStyle(ButtonStyle.Secondary).setEmoji('✖️'),
+    container.addActionRowComponents(
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder().setCustomId(`prestige_confirm:${interaction.user.id}`).setLabel(`Prestige ${next}`).setStyle(ButtonStyle.Danger).setEmoji('🔄'),
+        new ButtonBuilder().setCustomId('prestige_cancel').setLabel('Cancel').setStyle(ButtonStyle.Secondary).setEmoji('✖️'),
+      ),
     );
-    const msg = await interaction.editReply({ components: [container, buttons] });
+    const msg = await interaction.editReply({ components: [container] });
     const collector = (msg as { createMessageComponentCollector: (opts: { filter: (i: { user: { id: string }; customId: string }) => boolean; time: number; max: number }) => { on: (e: string, cb: (i: { customId: string; update: (opts: unknown) => Promise<void> }) => void) => void } }).createMessageComponentCollector({
       filter: (i) => i.user.id === interaction.user.id, time: 30_000, max: 1,
     });

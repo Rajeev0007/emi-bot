@@ -143,9 +143,8 @@ export default new Command({
       ? buildOverview(config.bot.name)
       : buildCategory(initCat, descMap);
 
-    const msg = await interaction.editReply({
-      components: [container, buildSelectMenu(initCat)],
-    });
+    container.addActionRowComponents(buildSelectMenu(initCat));
+    const msg = await interaction.editReply({ components: [container] });
 
     // ── Collector: handle select menu interactions ──────────────────────────
     const collector = (msg as {
@@ -169,17 +168,20 @@ export default new Command({
         ? buildOverview(config.bot.name)
         : buildCategory(value, descMap);
 
+      newContainer.addActionRowComponents(buildSelectMenu(value));
       await i.update({
         flags: MessageFlags.IsComponentsV2 as never,
-        components: [newContainer, buildSelectMenu(value)],
+        components: [newContainer],
       });
     });
 
     collector.on('end', async () => {
       // Disable the menu when the 2-minute window closes
-      interaction.editReply({
-        components: [container, buildSelectMenu(initCat, true)],
-      }).catch(() => {});
+      const disabledContainer = initCat === 'overview'
+        ? buildOverview(config.bot.name)
+        : buildCategory(initCat, descMap);
+      disabledContainer.addActionRowComponents(buildSelectMenu(initCat, true));
+      interaction.editReply({ components: [disabledContainer] }).catch(() => {});
     });
   },
 });
