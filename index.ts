@@ -1,21 +1,26 @@
 /**
  * @file index.ts
  * @description Main entry point. Bootstraps the Discord client and all handlers.
+ *              Smart command auto-deployment runs before login — only syncs
+ *              when commands have actually changed.
  */
 
 import 'dotenv/config';
+import path from 'path';
 import { Client, GatewayIntentBits, Partials, Collection } from 'discord.js';
 import config             from './config/config';
 import logger             from './utils/Logger';
+import { autoDeployCommands } from './utils/AutoDeploy';
 import musicManager       from './managers/MusicManager';
-import CommandHandler      from './handlers/CommandHandler';
-import EventHandler        from './handlers/EventHandler';
-import InteractionHandler  from './handlers/InteractionHandler';
-import { Command }         from './structures/Command';
+import CommandHandler     from './handlers/CommandHandler';
+import EventHandler       from './handlers/EventHandler';
+import InteractionHandler from './handlers/InteractionHandler';
+import { Command }        from './structures/Command';
 
 if (!config.token)    { logger.error('DISCORD_TOKEN is not set. Exiting.'); process.exit(1); }
 if (!config.clientId) { logger.error('DISCORD_CLIENT_ID is not set. Exiting.'); process.exit(1); }
 
+// ── Discord client ────────────────────────────────────────────────────────────
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -29,7 +34,7 @@ const client = new Client({
   allowedMentions: { parse: ['users', 'roles'], repliedUser: true },
 });
 
-// Extend client
+// Extend client with custom collections
 (client as unknown as { commands: Collection<string, Command> }).commands = new Collection();
 (client as unknown as { musicManager: typeof musicManager }).musicManager = musicManager;
 const interactionHandler = new InteractionHandler(client);
@@ -47,6 +52,7 @@ commandHandler.load();
 eventHandler.load();
 interactionHandler.load();
 
+// ── Process handlers ──────────────────────────────────────────────────────────
 process.on('unhandledRejection', (reason) => {
   logger.error('[Process] Unhandled Promise Rejection:', (reason as Error)?.message ?? reason);
 });
@@ -63,8 +69,15 @@ const shutdown = async (signal: string) => {
 process.on('SIGINT',  () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-logger.info('[Startup] Connecting to Discord…');
-client.login(config.token).catch((err) => {
-  logger.error('[Startup] Login failed:', (err as Error).message);
-  process.exit(1);
-});
+// ── Boot ──────────────────────────────────────────────────────────────────────
+(async () => {
+  // Smart global command sync — only hits Discord API when commands changed
+  const commandsDir = path.join(__dirname, 'commands');
+  await autoDeployCommands(config.token, config.clientId, commandsDir);
+
+  logger.info('[Startup] Connecting to Discord…');
+  client.login(config.token).catch((err) => {
+    logger.error('[Startup] Login failed:', (err as Error).message);
+    process.exit(1);
+  });
+})();
