@@ -4,11 +4,11 @@
   "description": "Itsuki Bot — Premium Discord Economy Bot",
   "main": "index.ts",
   "scripts": {
-    "start": "tsx index.ts",
-    "dev": "tsx watch index.ts",
-    "deploy": "tsx deploy-commands.ts global",
-    "deploy:guild": "tsx deploy-commands.ts guild",
-    "deploy:clear-guild": "tsx deploy-commands.ts clear-guild",
+    "start": "node --import tsx/esm index.ts",
+    "dev": "node --watch --import tsx/esm index.ts",
+    "deploy": "node --import tsx/esm deploy-commands.ts global",
+    "deploy:guild": "node --import tsx/esm deploy-commands.ts guild",
+    "deploy:clear-guild": "node --import tsx/esm deploy-commands.ts clear-guild",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
