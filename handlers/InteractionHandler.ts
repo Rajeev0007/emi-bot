@@ -1,12 +1,15 @@
 /**
  * @file InteractionHandler.ts
- * @description Routes button/modal/select-menu interactions to their handlers.
+ * @description Routes button / modal / select-menu interactions to their handlers.
+ * All interactions are patched with IS_COMPONENTS_V2 before dispatch so handlers
+ * do not need to include the flag manually in every editReply / update call.
  */
 
 import fs   from 'fs';
 import path from 'path';
 import { type Client, type Interaction } from 'discord.js';
-import logger from '../utils/Logger';
+import logger          from '../utils/Logger';
+import { patchReplies } from '../utils/V2Flag';
 
 interface InteractionModule {
   customId: string;
@@ -55,8 +58,11 @@ export default class InteractionHandler {
   }
 
   async handle(interaction: Interaction): Promise<void> {
+    // IS_COMPONENTS_V2 is patched onto the interaction in interactionCreate.ts
+    // before this method is called — no need to patch again here.
+
     let map: Map<string, InteractionModule> | null = null;
-    if ((interaction as { isButton?: () => boolean }).isButton?.())           map = this.buttons;
+    if ((interaction as { isButton?: () => boolean }).isButton?.())                map = this.buttons;
     else if ((interaction as { isModalSubmit?: () => boolean }).isModalSubmit?.()) map = this.modals;
     else if ((interaction as { isAnySelectMenu?: () => boolean }).isAnySelectMenu?.()) map = this.menus;
     if (!map) return;
@@ -73,12 +79,11 @@ export default class InteractionHandler {
     }
 
     if (!handler) {
-      // No handler found — acknowledge the interaction to prevent "This interaction failed" in Discord
-      logger.debug(`[InteractionHandler] No handler found for "${rawId}" — deferring update.`);
-      const i = interaction as any;
+      logger.debug(`[InteractionHandler] No handler for "${rawId}" — deferring update.`);
+      const i = interaction as unknown as Record<string, unknown>;
       try {
         if (!i.replied && !i.deferred) {
-          await i.deferUpdate();
+          await (i.deferUpdate as () => Promise<void>)();
         }
       } catch { /* interaction may have expired */ }
       return;
@@ -87,12 +92,15 @@ export default class InteractionHandler {
     try {
       await handler.execute(interaction, this.client);
     } catch (err) {
-      logger.error(`[InteractionHandler] Error handling ${rawId}:`, (err as Error).message);
+      logger.error(`[InteractionHandler] Error handling "${rawId}":`, (err as Error).message);
       logger.debug((err as Error).stack ?? '');
       const msg = { content: '❌ An error occurred processing this interaction.', ephemeral: true };
-      const i = interaction as any;
-      if (i.replied || i.deferred) await i.followUp(msg).catch(() => {});
-      else                          await i.reply(msg).catch(() => {});
+      const i = interaction as unknown as Record<string, unknown>;
+      if (i.replied || i.deferred) {
+        await (i.followUp as (o: unknown) => Promise<void>)(msg).catch(() => {});
+      } else {
+        await (i.reply as (o: unknown) => Promise<void>)(msg).catch(() => {});
+      }
     }
   }
 }

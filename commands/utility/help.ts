@@ -1,74 +1,185 @@
-import {
-  SlashCommandBuilder, MessageFlags, ContainerBuilder,
-  TextDisplayBuilder, SeparatorBuilder, SeparatorSpacingSize,
-  ActionRowBuilder, ButtonBuilder, ButtonStyle,
-  type ChatInputCommandInteraction,
-} from 'discord.js';
-import { Command } from '../../structures/Command';
-import config      from '../../config/config';
+/**
+ * @file help.ts
+ * @description Professional help menu with a category select menu inside a V2 container.
+ */
 
-const CATEGORIES: Record<string, { emoji: string; desc: string; commands: string[] }> = {
-  economy:     { emoji: '💰', desc: 'Earn, spend, and manage coins', commands: ['balance','daily','weekly','work','crime','rob','beg','search','deposit','withdraw','transfer','prestige','richest'] },
-  gambling:    { emoji: '🎰', desc: 'Risk it for the biscuit',       commands: ['coinflip','slots','blackjack','dice','roulette','crash','mines'] },
-  social:      { emoji: '🤗', desc: 'Interact with other users',     commands: ['hug','kiss','pat','slap','cuddle','bonk','wave','dance','cry','poke'] },
-  music:       { emoji: '🎵', desc: 'Music playback',                commands: ['play','queue','skip','stop','leave','pause','resume','loop','nowplaying','seek','shuffle','volume','247','autoplay','setvoice'] },
-  anime:       { emoji: '🎌', desc: 'Anime search and images',       commands: ['anime','waifu'] },
-  shop:        { emoji: '🏪', desc: 'Buy items and gear',            commands: ['shop'] },
-  inventory:   { emoji: '🎒', desc: 'Manage your items',             commands: ['inventory'] },
-  pets:        { emoji: '🐾', desc: 'Virtual pets',                  commands: ['pet'] },
-  leaderboard: { emoji: '🏆', desc: 'Global rankings',               commands: ['leaderboard'] },
-  utility:     { emoji: '⚙️', desc: 'Bot info and tools',            commands: ['help','ping','stats'] },
+import {
+  SlashCommandBuilder, MessageFlags,
+  ContainerBuilder, TextDisplayBuilder, SeparatorBuilder, SeparatorSpacingSize,
+  ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder,
+  type ChatInputCommandInteraction, type Client, Collection,
+  type StringSelectMenuInteraction,
+} from 'discord.js';
+import { Command }    from '../../structures/Command';
+import config         from '../../config/config';
+
+// ── Category definitions ──────────────────────────────────────────────────────
+const CATEGORIES: Record<string, { emoji: string; label: string; desc: string; commands: string[] }> = {
+  economy:     { emoji: '💰', label: 'Economy',     desc: 'Earn, spend, and manage your coins',      commands: ['balance','daily','weekly','work','crime','rob','beg','search','deposit','withdraw','transfer','prestige','richest'] },
+  gambling:    { emoji: '🎰', label: 'Gambling',    desc: 'Risk your coins for big rewards',          commands: ['slots','blackjack','coinflip','dice','roulette','crash','mines'] },
+  social:      { emoji: '🤗', label: 'Social',      desc: 'Interact and emote with other users',      commands: ['hug','kiss','pat','slap','cuddle','bonk','wave','dance','cry','poke'] },
+  music:       { emoji: '🎵', label: 'Music',       desc: 'Play music in voice channels',             commands: ['play','queue','skip','stop','leave','pause','resume','loop','nowplaying','seek','shuffle','volume','247','autoplay','setvoice'] },
+  anime:       { emoji: '🎌', label: 'Anime',       desc: 'Anime images and character search',        commands: ['anime','waifu'] },
+  shop:        { emoji: '🏪', label: 'Shop',        desc: 'Browse and buy items',                     commands: ['shop'] },
+  inventory:   { emoji: '🎒', label: 'Inventory',   desc: 'View and manage your items',               commands: ['inventory'] },
+  pets:        { emoji: '🐾', label: 'Pets',        desc: 'Hatch, feed, and level up virtual pets',   commands: ['pet'] },
+  leaderboard: { emoji: '🏆', label: 'Leaderboard', desc: 'Global rankings and top players',          commands: ['leaderboard'] },
+  utility:     { emoji: '⚙️', label: 'Utility',     desc: 'Bot information and server tools',         commands: ['help','ping','stats','botbrand'] },
+  profile:     { emoji: '🧑‍💼', label: 'Profile',     desc: 'Your stats, XP, levels, and achievements', commands: ['profile'] },
 };
 
-function buildOverview(): ContainerBuilder {
-  const lines = Object.entries(CATEGORIES).map(([key, cat]) => `> ${cat.emoji} **${key.charAt(0).toUpperCase() + key.slice(1)}** — ${cat.desc}`);
+// ── Builders ──────────────────────────────────────────────────────────────────
+
+function buildOverview(botName: string): ContainerBuilder {
+  const lines = Object.values(CATEGORIES).map(
+    (c) => `> ${c.emoji} **${c.label}** — ${c.desc}`
+  );
+  const total = Object.values(CATEGORIES).reduce((n, c) => n + c.commands.length, 0);
+
   return new ContainerBuilder()
-    .addTextDisplayComponents(new TextDisplayBuilder().setContent([`# ${config.bot.name} Help`, `*Premium Discord Economy Bot*`].join('\n')))
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `# ${botName}\n*Your all-in-one Discord economy and fun bot*`
+      )
+    )
     .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
-    .addTextDisplayComponents(new TextDisplayBuilder().setContent(lines.join('\n')))
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(lines.join('\n'))
+    )
     .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
-    .addTextDisplayComponents(new TextDisplayBuilder().setContent('-# Select a category below for detailed commands'));
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `-# ${total} commands total · Use \`/command\` or \`${config.prefix}command\` · Select a category below`
+      )
+    );
 }
 
-function buildCategory(key: string, cat: { emoji: string; desc: string; commands: string[] }): ContainerBuilder {
+function buildCategory(
+  key: string,
+  commandDescriptions: Map<string, string>,
+): ContainerBuilder {
+  const cat = CATEGORIES[key];
+  const lines = cat.commands.map((name) => {
+    const desc = commandDescriptions.get(name) ?? '';
+    return desc
+      ? `\`/${name}\` — ${desc}`
+      : `\`/${name}\``;
+  });
+
   return new ContainerBuilder()
-    .addTextDisplayComponents(new TextDisplayBuilder().setContent([`# ${cat.emoji} ${key.charAt(0).toUpperCase() + key.slice(1)} Commands`, cat.desc].join('\n')))
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `# ${cat.emoji} ${cat.label}\n${cat.desc}`
+      )
+    )
     .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true))
-    .addTextDisplayComponents(new TextDisplayBuilder().setContent(cat.commands.map((c) => `> \`/${c}\``).join('\n')))
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(lines.join('\n'))
+    )
     .addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small).setDivider(true))
-    .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${cat.commands.length} command(s)`));
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `-# ${cat.commands.length} command${cat.commands.length !== 1 ? 's' : ''} · Works with slash \`/\` and prefix \`${config.prefix}\``
+      )
+    );
 }
 
-function catButtons(active: string): ActionRowBuilder<ButtonBuilder>[] {
-  const entries = Object.entries(CATEGORIES);
-  const rows: ActionRowBuilder<ButtonBuilder>[] = [];
-  for (let i = 0; i < entries.length; i += 5) {
-    const row = new ActionRowBuilder<ButtonBuilder>();
-    entries.slice(i, i + 5).forEach(([key, cat]) => {
-      row.addComponents(new ButtonBuilder().setCustomId(`help_cat:${key}`).setLabel(key.charAt(0).toUpperCase() + key.slice(1)).setEmoji(cat.emoji).setStyle(key === active ? ButtonStyle.Primary : ButtonStyle.Secondary));
-    });
-    rows.push(row);
-  }
-  return rows;
+function buildSelectMenu(active: string, disabled = false): ActionRowBuilder<StringSelectMenuBuilder> {
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId('help_select')
+    .setPlaceholder('📋 Browse categories…')
+    .setDisabled(disabled)
+    .addOptions(
+      new StringSelectMenuOptionBuilder()
+        .setValue('overview')
+        .setLabel('Overview')
+        .setDescription('All categories at a glance')
+        .setEmoji('🏠')
+        .setDefault(active === 'overview'),
+      ...Object.entries(CATEGORIES).map(([key, cat]) =>
+        new StringSelectMenuOptionBuilder()
+          .setValue(key)
+          .setLabel(cat.label)
+          .setDescription(cat.desc.slice(0, 100))
+          .setEmoji(cat.emoji.replace(/\uFE0F/g, '')) // strip variation selector for emoji objects
+          .setDefault(key === active)
+      ),
+    );
+
+  return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(menu);
 }
 
+// ── Command ───────────────────────────────────────────────────────────────────
 export default new Command({
   data: new SlashCommandBuilder()
-    .setName('help').setDescription('View all available commands.')
-    .addStringOption((o) => o.setName('category').setDescription('Jump to a category')
-      .addChoices(...Object.keys(CATEGORIES).map((k) => ({ name: k, value: k })))),
-  category: 'utility', cooldown: 3000,
-  async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as any });
-    let active = (interaction.options.get('category')?.value as string) ?? 'home';
-    const container = active === 'home' ? buildOverview() : buildCategory(active, CATEGORIES[active]);
-    const msg = await interaction.editReply({ components: [container, ...catButtons(active)] });
-    const collector = (msg as { createMessageComponentCollector: (o: { filter: (i: { user: { id: string }; customId: string }) => boolean; time: number }) => { on: (e: string, cb: (i: { customId: string; update: (o: unknown) => Promise<void> }) => void) => void } }).createMessageComponentCollector({
-      filter: (i) => i.user.id === interaction.user.id && (i.customId.startsWith('help_cat:') || i.customId === 'help_home'), time: 120_000,
+    .setName('help')
+    .setDescription('Browse all bot commands by category.')
+    .addStringOption((o) =>
+      o.setName('category')
+        .setDescription('Jump straight to a category')
+        .addChoices(
+          { name: '🏠 Overview', value: 'overview' },
+          ...Object.entries(CATEGORIES).map(([k, c]) => ({ name: `${c.emoji} ${c.label}`, value: k })),
+        )
+    ),
+  category: 'utility',
+  aliases: ['h', 'commands', 'cmds'],
+  cooldown: 3000,
+
+  async execute(interaction: ChatInputCommandInteraction, client?: Client) {
+    await interaction.deferReply({ flags: MessageFlags.IsComponentsV2 as never });
+
+    // Build a name→description map from loaded commands
+    const cmdCollection = (client as unknown as { commands?: Collection<string, Command> })?.commands;
+    const descMap = new Map<string, string>();
+    if (cmdCollection) {
+      for (const [name, cmd] of cmdCollection) {
+        descMap.set(name, (cmd.data as { description?: string }).description ?? '');
+      }
+    }
+
+    const initCat = interaction.options.getString('category') ?? 'overview';
+    const container = initCat === 'overview'
+      ? buildOverview(config.bot.name)
+      : buildCategory(initCat, descMap);
+
+    const msg = await interaction.editReply({
+      components: [container, buildSelectMenu(initCat)],
     });
-    collector.on('collect', async (i) => {
-      if (i.customId === 'help_home') { active = 'home'; await i.update({ components: [buildOverview(), ...catButtons('home')] }); }
-      else { active = i.customId.split(':')[1]; await i.update({ components: [buildCategory(active, CATEGORIES[active]), ...catButtons(active)] }); }
+
+    // ── Collector: handle select menu interactions ──────────────────────────
+    const collector = (msg as {
+      createMessageComponentCollector: (opts: {
+        filter: (i: { user: { id: string }; customId: string }) => boolean;
+        time: number;
+      }) => {
+        on: (
+          event: string,
+          cb: (i: StringSelectMenuInteraction) => void
+        ) => void;
+      };
+    }).createMessageComponentCollector({
+      filter: (i) => i.user.id === interaction.user.id && i.customId === 'help_select',
+      time: 120_000,
+    });
+
+    collector.on('collect', async (i: StringSelectMenuInteraction) => {
+      const value     = (i.values as string[])[0];
+      const newContainer = value === 'overview'
+        ? buildOverview(config.bot.name)
+        : buildCategory(value, descMap);
+
+      await i.update({
+        flags: MessageFlags.IsComponentsV2 as never,
+        components: [newContainer, buildSelectMenu(value)],
+      });
+    });
+
+    collector.on('end', async () => {
+      // Disable the menu when the 2-minute window closes
+      interaction.editReply({
+        components: [container, buildSelectMenu(initCat, true)],
+      }).catch(() => {});
     });
   },
 });
