@@ -21,12 +21,12 @@ args = "Itsuki Bot"
 name = "Itsuki Bot"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "node dist/index.js"
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx index.ts"
 
 [userenv]
 

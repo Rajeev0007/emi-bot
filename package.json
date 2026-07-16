@@ -2,23 +2,22 @@
   "name": "itsuki-bot",
   "version": "1.0.0",
   "description": "Itsuki Bot — Premium Discord Economy Bot",
-  "main": "dist/index.js",
+  "main": "index.ts",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsc --watch & node --watch dist/index.js",
-    "deploy": "tsc && node dist/deploy-commands.js global",
-    "deploy:guild": "tsc && node dist/deploy-commands.js guild",
-    "deploy:clear-guild": "tsc && node dist/deploy-commands.js clear-guild",
-    "typecheck": "tsc --noEmit",
-    "setup": "npm install && npm run build"
+    "start": "tsx index.ts",
+    "dev": "tsx watch index.ts",
+    "deploy": "tsx deploy-commands.ts global",
+    "deploy:guild": "tsx deploy-commands.ts guild",
+    "deploy:clear-guild": "tsx deploy-commands.ts clear-guild",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "axios": "^1.7.9",
     "canvas": "^3.2.3",
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.5",
-    "lavende": "^1.0.2"
+    "lavende": "^1.0.2",
+    "tsx": "^4.23.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

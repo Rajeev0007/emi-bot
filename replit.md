@@ -4,8 +4,7 @@ A premium Discord economy bot built with TypeScript and Discord.js v14.
 
 ## Stack
 
-- **Runtime:** Node.js ≥ 22
-- **Language:** TypeScript → compiled to `dist/`
+- **Runtime:** Node.js ≥ 22 + tsx (runs TypeScript directly — no build step)
 - **Framework:** Discord.js v14
 - **Music:** Lavende
 - **Canvas:** node-canvas (profile cards)
@@ -14,7 +13,7 @@ A premium Discord economy bot built with TypeScript and Discord.js v14.
 ## Project structure
 
 ```
-index.ts              ← entry point
+index.ts              ← entry point (run this)
 deploy-commands.ts    ← slash command registration
 commands/             ← commands by category (economy, gambling, music…)
 config/               ← bot config and music source config
@@ -29,7 +28,6 @@ structures/           ← base Command and Event classes
 utils/                ← logger, formatter, helpers
 builders/             ← Discord component builders
 emojis/               ← emoji PNG assets
-dist/                 ← compiled output (mirrors source, do not edit)
 ```
 
 ## Environment variables
@@ -42,26 +40,26 @@ dist/                 ← compiled output (mirrors source, do not edit)
 | `BOT_OWNERS` | ❌ | Comma-separated owner Discord user IDs |
 | `PREFIX` | ❌ | Message command prefix (default: `!`) |
 
-## Hosting (any server/VPS)
+## Hosting — start command
 
 ```bash
-npm install          # install dependencies
-npm run build        # compile TypeScript → dist/
-node dist/index.js   # start the bot
+npm install
+npx tsx index.ts
 ```
 
-One-liner: `npm install && npm run build && node dist/index.js`
+That's it. No build step required.
 
 ## Scripts
 
 | Command | Description |
 |---|---|
-| `npm run build` | Compile TypeScript → `dist/` |
-| `npm start` | Start compiled bot |
-| `npm run dev` | Watch mode (recompile + restart) |
+| `npm start` | Start the bot (`tsx index.ts`) |
+| `npm run dev` | Watch mode — auto-restart on file changes |
 | `npm run deploy` | Register slash commands globally |
 | `npm run deploy:guild` | Register to dev guild instantly |
+| `npm run typecheck` | Type-check without running |
 
 ## User preferences
 
-- Flat structure — source files live at root, not inside a `src/` folder
+- No build step — run directly with `npx tsx index.ts`
+- Flat structure — source files at root, no `src/` wrapper
