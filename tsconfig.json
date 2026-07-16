@@ -5,7 +5,7 @@
     "moduleResolution": "node",
     "lib": ["ES2022"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "strict": false,
     "noImplicitAny": false,
     "esModuleInterop": true,
@@ -20,7 +20,7 @@
     "exactOptionalPropertyTypes": false
   },
   "include": [
-    "src/**/*.ts"
+    "**/*.ts"
   ],
   "exclude": [
     "node_modules",
