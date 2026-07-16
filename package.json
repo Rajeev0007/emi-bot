@@ -1,14 +1,15 @@
 {
-  "name": "@workspace/oits",
+  "name": "itsuki-bot",
   "version": "1.0.0",
-  "description": "Oits — Premium Discord Economy Bot",
+  "description": "Itsuki Bot — Premium Discord Economy Bot",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsc --watch & node --watch dist/index.js",
     "deploy": "tsc && node dist/deploy-commands.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "setup": "npm install && npm run build"
   },
   "dependencies": {
     "axios": "^1.7.9",

@@ -22,7 +22,7 @@ const config = {
 
   /* Bot Meta */
   bot: {
-    name:    'Premium Economy Bot',
+    name:    'Itsuki Bot',
     version: '1.0.0',
     prefix:  '/',
   },
