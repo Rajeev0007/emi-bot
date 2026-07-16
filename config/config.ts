@@ -9,15 +9,15 @@ const config = {
   clientId: process.env.DISCORD_CLIENT_ID ?? '',
   guildId:  process.env.DISCORD_GUILD_ID  ?? '',
   /** Prefix for message-based commands. Override with PREFIX env var. */
-  prefix:   process.env.PREFIX ?? '!',
+  prefix:   process.env.PREFIX ?? ',',
 
   /* Presence */
   presence: {
-    status: 'online' as const,
+    status: 'idle' as const,
     activities: [
-      { name: '/help • Economy Bot', type: 3 },
-      { name: '💰 /balance',         type: 3 },
-      { name: '🎰 /slots',           type: 3 },
+      { name: '/help | ,help', type: 3 },
+      { name: '/play loving you ',         type: 3 },
+      { name: '/kiss @you🫵',           type: 3 },
     ],
     activityInterval: 30_000,
   },
@@ -51,7 +51,7 @@ const config = {
     startingBank:    0,
     bankLimit:       1_000_000,
     maxWallet:       10_000_000,
-    currency:        '🪙',
+    currency:        '<:itsukiCoin:1527226118598426675>',
     currencyName:    'coins',
 
     daily:   { min: 500,     max: 1_500   },
