@@ -1,6 +1,6 @@
 /**
  * @file Command.ts
- * @description Base class for all slash commands.
+ * @description Base class for all slash/prefix hybrid commands.
  */
 
 import type {
@@ -30,6 +30,8 @@ export interface CommandOptions {
   permissions?: string[];
   maintenance?: boolean;
   autocomplete?: ((interaction: AutocompleteInteraction, client?: Client) => Promise<void>) | null;
+  /** Additional names the command can be invoked with via prefix (e.g. ['bal'] for 'balance'). */
+  aliases?: string[];
 }
 
 export class Command {
@@ -44,6 +46,7 @@ export class Command {
   permissions: string[];
   maintenance: boolean;
   autocomplete: CommandOptions['autocomplete'];
+  aliases: string[];
 
   constructor(options: CommandOptions) {
     if (!options.data)    throw new Error('[Command] "data" (SlashCommandBuilder) is required.');
@@ -58,8 +61,9 @@ export class Command {
     this.nsfw        = options.nsfw        ?? false;
     this.premium     = options.premium     ?? false;
     this.permissions = options.permissions ?? [];
-    this.maintenance = options.maintenance ?? false;
+    this.maintenance  = options.maintenance  ?? false;
     this.autocomplete = options.autocomplete ?? null;
+    this.aliases      = options.aliases      ?? [];
   }
 
   get name(): string {

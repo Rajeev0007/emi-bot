@@ -8,6 +8,8 @@ const config = {
   token:    process.env.DISCORD_TOKEN    ?? '',
   clientId: process.env.DISCORD_CLIENT_ID ?? '',
   guildId:  process.env.DISCORD_GUILD_ID  ?? '',
+  /** Prefix for message-based commands. Override with PREFIX env var. */
+  prefix:   process.env.PREFIX ?? '!',
 
   /* Presence */
   presence: {

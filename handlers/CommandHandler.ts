@@ -1,6 +1,8 @@
 /**
  * @file CommandHandler.ts
  * @description Dynamically loads all commands from the commands/ directory.
+ * Registers each command by its main name AND any defined aliases so both
+ * slash and prefix lookups work correctly.
  */
 
 import fs   from 'fs';
@@ -9,8 +11,10 @@ import { type Client, Collection } from 'discord.js';
 import { Command } from '../structures/Command';
 import logger from '../utils/Logger';
 
+type ClientWithCommands = Client & { commands: Collection<string, Command> };
+
 export default class CommandHandler {
-  client: Client & { commands?: Collection<string, Command> };
+  client: Client;
 
   constructor(client: Client) {
     this.client = client;
@@ -19,7 +23,7 @@ export default class CommandHandler {
   load(): void {
     const commandsPath = path.join(__dirname, '../commands');
     const categories   = fs.readdirSync(commandsPath);
-    let count = 0;
+    let   count        = 0;
 
     for (const category of categories) {
       const catPath = path.join(commandsPath, category);
@@ -31,14 +35,31 @@ export default class CommandHandler {
         const filePath = path.join(catPath, file);
         try {
           // eslint-disable-next-line @typescript-eslint/no-require-imports
-          const mod = require(filePath);
+          const mod     = require(filePath);
           const command = (mod.default ?? mod) as Command;
+
           if (!command?.data || !command?.execute) {
             logger.warn(`[CommandHandler] Skipping ${file} — missing data or execute`);
             continue;
           }
+
           command.category = category;
-          (this.client as Client & { commands: Collection<string, Command> }).commands.set(command.name, command);
+
+          const cmds = (this.client as ClientWithCommands).commands;
+
+          // Register by primary name
+          cmds.set(command.name, command);
+
+          // Register each alias (skip if name is already taken to avoid collisions)
+          for (const alias of command.aliases ?? []) {
+            if (cmds.has(alias)) {
+              logger.warn(`[CommandHandler] Alias "${alias}" for ${command.name} conflicts with an existing entry — skipped`);
+            } else {
+              cmds.set(alias, command);
+              logger.debug(`[CommandHandler] Alias: ${alias} → ${command.name}`);
+            }
+          }
+
           count++;
           logger.debug(`[CommandHandler] Loaded /${command.name} (${category})`);
         } catch (err) {
