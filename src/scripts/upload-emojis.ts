@@ -13,7 +13,7 @@ const clientId = process.env.DISCORD_CLIENT_ID!;
 
 if (!token || !clientId) { console.error('❌ Set DISCORD_TOKEN and DISCORD_CLIENT_ID'); process.exit(1); }
 
-const EMOJI_DIR = path.join(__dirname, '../emojis');
+const EMOJI_DIR = path.join(__dirname, '../../emojis');
 const API_BASE  = `https://discord.com/api/v10/applications/${clientId}/emojis`;
 
 /** Clean up the raw filename into a professional emoji name */
@@ -87,7 +87,7 @@ async function main() {
   console.log(`\n✅ Done! Uploaded ${results.length}/${files.length} emojis.`);
 
   // Save mapping to a JSON file for use in the bot
-  const mapPath = path.join(__dirname, '../config/emoji-map.json');
+  const mapPath = path.join(__dirname, '../config/emoji-map.json'); // resolves to src/config/ when run via ts-node
   const map: Record<string, string> = {};
   for (const r of results) map[r.name] = r.id;
   fs.writeFileSync(mapPath, JSON.stringify(map, null, 2));
