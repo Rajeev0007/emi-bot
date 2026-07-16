@@ -227,6 +227,9 @@ export class MessageCommandAdapter {
   readonly client:  Client;
   readonly options: PrefixOptions;
 
+  /** Real GuildMember — exposes .voice, .permissions, .roles etc. for music / permission checks */
+  get member() { return this._msg.member; }
+
   replied  = false;
   deferred = false;
 
