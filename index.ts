@@ -17,6 +17,8 @@ import EventHandler       from './handlers/EventHandler';
 import InteractionHandler from './handlers/InteractionHandler';
 import { Command }        from './structures/Command';
 
+logger.banner('Itsuki Bot', '1.0.0', 'Economy · Gambling · Music · Anime · Social');
+
 if (!config.token)    { logger.error('DISCORD_TOKEN is not set. Exiting.'); process.exit(1); }
 if (!config.clientId) { logger.error('DISCORD_CLIENT_ID is not set. Exiting.'); process.exit(1); }
 

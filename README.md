@@ -1,223 +1,90 @@
-# Itsuki Bot
+<div align="center">
 
-A premium Discord economy bot with gambling, pets, music, anime cards, social actions, leaderboards, and more — built with TypeScript and Discord.js v14.
+# ✦ Itsuki Bot
+
+**A premium all-in-one Discord bot — economy, gambling, music, anime, social, and more.**
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Discord.js](https://img.shields.io/badge/Discord.js-v14-5865f2?style=flat-square&logo=discord&logoColor=white)](https://discord.js.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-≥22-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)](LICENSE)
+
+</div>
 
 ---
 
 ## Features
 
-- 💰 **Economy** — balance, daily/weekly/monthly rewards, work, crime, rob, beg, search
-- 🎰 **Gambling** — slots, blackjack, coinflip, dice, roulette, crash, mines
-- 🐾 **Pets** — hatch, feed, and level up pets
-- 🏪 **Shop & Inventory** — buy items, open crates, manage your inventory
-- 🎌 **Anime Cards** — collect waifu/character cards
-- 🎵 **Music** — play, queue, loop, shuffle, autoplay (via Lavende)
-- 👥 **Social** — hug, kiss, pat, slap, poke, cuddle, and more
-- 🏆 **Leaderboard** — top users by balance, level, and more
-- 🧑‍💼 **Profiles** — XP, levels, prestige, reputation, achievements
-- 🎖️ **Achievements** — unlock badges through gameplay
-- 🔧 **Utility** — ping, help, stats, per-server bot branding
+| Category | Commands |
+|---|---|
+| 💰 **Economy** | `balance` `daily` `weekly` `work` `crime` `rob` `beg` `search` `deposit` `withdraw` `transfer` `prestige` `richest` |
+| 🎰 **Gambling** | `slots` `blackjack` `coinflip` `dice` `roulette` `crash` `mines` |
+| 🎵 **Music** | `play` `queue` `skip` `pause` `resume` `stop` `leave` `loop` `nowplaying` `seek` `shuffle` `volume` `247` `autoplay` `setvoice` |
+| 🎌 **Anime** | `anime` `waifu` |
+| 🐾 **Pets** | `pet` |
+| 🏪 **Shop & Inventory** | `shop` `inventory` |
+| 🧑‍💼 **Profile** | `profile` |
+| 🏆 **Leaderboard** | `leaderboard` |
+| 🤗 **Social** | `hug` `kiss` `pat` `slap` `poke` `cuddle` `bonk` `wave` `dance` `cry` |
+| ⚙️ **Utility** | `help` `ping` `stats` `botbrand` `noprefix` |
 
 ---
 
 ## Requirements
 
-| Requirement | Version |
+| Tool | Version |
 |---|---|
-| Node.js | ≥ 22.0.0 |
-| npm | ≥ 8 |
+| **Node.js** | ≥ 22.0.0 |
+| **npm** | ≥ 8 |
+
+> **Linux/Ubuntu** — the `canvas` package needs native libraries:
+> ```bash
+> sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+> ```
+> **macOS** — `brew install pkg-config cairo pango libpng jpeg giflib librsvg`
 
 ---
 
 ## Quick Start
 
-### 1. Clone the repository
-
 ```bash
+# 1. Clone
 git clone https://github.com/yourusername/itsuki-bot.git
 cd itsuki-bot
-```
 
-### 2. Install dependencies
-
-```bash
+# 2. Install dependencies
 npm install
-```
 
-> ⚠️ **Note:** The `canvas` package requires native build tools.  
-> - **Linux/Ubuntu:** `sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`  
-> - **macOS:** `brew install pkg-config cairo pango libpng jpeg giflib librsvg`  
-> - **Windows:** Install [windows-build-tools](https://github.com/felixrieseberg/windows-build-tools) or use WSL2.
+# 3. Set environment variables (see table below)
+cp .env.example .env   # edit .env with your values
 
-### 3. Configure environment variables
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and fill in your values:
-
-```env
-DISCORD_TOKEN=your_bot_token_here
-DISCORD_CLIENT_ID=your_client_id_here
-DISCORD_GUILD_ID=your_guild_id_here   # optional, for dev — instant registration
-BOT_OWNERS=your_user_id               # optional
-```
-
-**How to get these values:**
-1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Create a new application → **Bot** tab → copy the **Token**
-3. Copy the **Application ID** from the General Information tab (this is your Client ID)
-4. Enable **Privileged Intents**: Server Members Intent, Message Content Intent
-
-### 4. Build the project
-
-```bash
-npm run build
-```
-
-### 5. Register slash commands
-
-```bash
+# 4. Register slash commands
 npm run deploy
-```
 
-> If `DISCORD_GUILD_ID` is set, commands register to that guild instantly.  
-> Without it, commands register globally (up to 1 hour to propagate).
-
-### 6. Start the bot
-
-```bash
+# 5. Start
 npm start
 ```
 
----
-
-## One-liner Setup
-
-```bash
-npm run setup && npm run deploy && npm start
-```
+No build step required — TypeScript runs directly via `tsx`.
 
 ---
 
-## Hosting Options
+## Environment Variables
 
-### VPS / Dedicated Server (Ubuntu/Debian)
+| Variable | Required | Description |
+|---|---|---|
+| `DISCORD_TOKEN` | ✅ | Bot token from the [Discord Developer Portal](https://discord.com/developers/applications) |
+| `DISCORD_CLIENT_ID` | ✅ | Application / Client ID |
+| `DISCORD_GUILD_ID` | ❌ | Dev guild ID — commands register instantly instead of globally |
+| `BOT_OWNERS` | ❌ | Comma-separated owner Discord user IDs |
+| `PREFIX` | ❌ | Message command prefix (default: `!`) |
+| `LOG_LEVEL` | ❌ | Log verbosity: `error` `warn` `info` `debug` (default: `info`) |
 
-```bash
-# Install Node.js 22
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install canvas build deps
-sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev \
-  libjpeg-dev libgif-dev librsvg2-dev
-
-# Clone, install, and start
-git clone https://github.com/yourusername/itsuki-bot.git && cd itsuki-bot
-npm install && npm run build && npm run deploy
-npm start
-```
-
-**Keep it running with PM2:**
-
-```bash
-npm install -g pm2
-pm2 start dist/index.js --name itsuki-bot
-pm2 save
-pm2 startup
-```
-
-### Replit
-
-1. Import this repo into Replit
-2. Add secrets: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID`
-3. In the Shell: `npm run build && npm run deploy`
-4. Set run command to: `node dist/index.js`
-
-### Railway / Render / Fly.io
-
-1. Fork this repo and connect it to your platform
-2. Set the environment variables in the platform dashboard
-3. Set build command: `npm install && npm run build`
-4. Set start command: `node dist/index.js`
-5. Run `npm run deploy` once from your local machine to register commands
-
-### Docker
-
-```dockerfile
-FROM node:22-alpine
-
-RUN apk add --no-cache cairo-dev pango-dev jpeg-dev giflib-dev librsvg-dev \
-    python3 make g++
-
-WORKDIR /app
-COPY package.json .
-RUN npm install
-
-COPY . .
-RUN npm run build
-
-CMD ["node", "dist/index.js"]
-```
-
-```bash
-docker build -t itsuki-bot .
-docker run -d --env-file .env --name itsuki-bot itsuki-bot
-```
-
----
-
-## Project Structure
-
-```
-itsuki-bot/
-├── commands/          # Slash commands, grouped by category
-│   ├── anime/
-│   ├── economy/
-│   ├── gambling/
-│   ├── inventory/
-│   ├── leaderboard/
-│   ├── music/
-│   ├── pets/
-│   ├── profile/
-│   ├── shop/
-│   ├── social/
-│   └── utility/
-├── config/
-│   ├── config.ts      # All bot settings (economy, cooldowns, shop items, etc.)
-│   └── music.ts       # Music engine settings
-├── database/          # JSON flat-file database + store helper
-├── events/            # Discord gateway events
-├── handlers/          # Command, event, and interaction loaders
-├── managers/          # Economy, cooldown, user, and music managers
-├── services/          # Anime API, GIF service, profile canvas renderer
-├── structures/        # Base Command and Event classes
-├── utils/             # Logger, formatter, constants, helpers
-├── builders/          # Discord component builders
-├── interactions/      # Button interaction handlers
-├── source.json        # Music source/client config
-├── index.ts           # Entry point
-└── deploy-commands.ts # Slash command registration script
-```
-
----
-
-## Configuration
-
-All bot behaviour is controlled by **`config/config.ts`**:
-
-| Section | What it controls |
-|---|---|
-| `economy` | Starting balance, rewards, cooldown payouts, work jobs, XP/levelling |
-| `cooldowns` | Per-command cooldown durations (in ms) |
-| `shop` | Shop items, prices, categories |
-| `gambling` | Slots symbols, blackjack rules, mines config |
-| `pets` | Pet types and stats |
-| `achievements` | Achievement definitions and rewards |
-| `colors` | Embed colour palette |
-| `presence` | Bot status and rotating activities |
+**Getting your token:**
+1. Open the [Developer Portal](https://discord.com/developers/applications) → **New Application**
+2. **Bot** tab → **Reset Token** → copy it
+3. Enable **Server Members Intent** and **Message Content Intent** under Privileged Gateway Intents
+4. **OAuth2 → URL Generator** → scopes: `bot` + `applications.commands` → invite the bot
 
 ---
 
@@ -225,22 +92,111 @@ All bot behaviour is controlled by **`config/config.ts`**:
 
 | Command | Description |
 |---|---|
-| `npm run build` | Compile TypeScript → `dist/` |
-| `npm start` | Start the compiled bot |
-| `npm run dev` | Watch mode (recompile + restart on changes) |
-| `npm run deploy` | Register slash commands with Discord |
-| `npm run typecheck` | Type-check without emitting files |
-| `npm run setup` | `npm install` + `npm run build` in one step |
+| `npm start` | Start the bot |
+| `npm run dev` | Watch mode — auto-restart on file changes |
+| `npm run deploy` | Register slash commands globally |
+| `npm run deploy:guild` | Register to dev guild instantly |
+| `npm run typecheck` | Type-check without running |
 
 ---
 
-## Invite the Bot
+## Project Structure
 
-Generate an invite URL in the [Developer Portal](https://discord.com/developers/applications):  
-**OAuth2 → URL Generator** → scopes: `bot`, `applications.commands` → permissions: `Administrator` (or fine-grained).
+```
+index.ts               ← entry point
+deploy-commands.ts     ← slash command registration
+start.js               ← plain-JS bootstrap (for hosts that need it)
+─────────────────────────────────────────────
+commands/
+  economy/             ← balance, daily, work, rob…
+  gambling/            ← slots, blackjack, mines…
+  music/               ← play, queue, skip…
+  anime/               ← anime, waifu
+  pets/                ← pet
+  shop/                ← shop
+  inventory/           ← inventory
+  leaderboard/         ← leaderboard
+  profile/             ← profile
+  social/              ← hug, kiss, pat…
+  utility/             ← help, ping, stats…
+─────────────────────────────────────────────
+config/                ← bot config, music config
+database/              ← JsonStore.ts + runtime JSON data files
+events/                ← Discord event listeners
+handlers/              ← command / event / interaction loaders
+interactions/          ← button & select-menu handlers
+managers/              ← EconomyManager, MusicManager, UserManager…
+services/              ← AnimeService, ProfileService (canvas)
+structures/            ← base Command and Event classes
+utils/                 ← Logger, Formatter, ProgressBar, helpers
+builders/              ← Discord Components V2 helpers
+emojis/                ← custom emoji PNG assets
+scripts/               ← one-off scripts (emoji upload)
+```
+
+---
+
+## Configuration
+
+All bot behaviour lives in **`config/config.ts`**:
+
+| Key | Controls |
+|---|---|
+| `economy` | Starting balance, daily/weekly amounts, XP thresholds, prestige bonuses |
+| `cooldowns` | Per-command cooldown durations (ms) |
+| `shop` | Shop items, prices, and categories |
+| `gambling` | Slot symbols & weights, blackjack rules, mines grid size |
+| `pets` | Pet types and base stats |
+| `achievements` | Achievement definitions and coin rewards |
+| `presence` | Bot status and rotating activity messages |
+
+---
+
+## Hosting
+
+### Any x86-64 VPS (Ubuntu / Debian)
+
+```bash
+# Node.js 22
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# canvas build deps
+sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev \
+  libjpeg-dev libgif-dev librsvg2-dev
+
+# clone & start
+git clone https://github.com/yourusername/itsuki-bot.git && cd itsuki-bot
+npm install && npm run deploy && npm start
+```
+
+**Keep it alive with PM2:**
+
+```bash
+npm install -g pm2
+pm2 start start.js --name itsuki-bot --interpreter node
+pm2 save && pm2 startup
+```
+
+> ⚠️ **Architecture note:** The music engine (`lavende`) ships x86-64 binaries only.
+> Use an **x86-64 / amd64** server. Check with `uname -m` — must output `x86_64`.
+
+### Railway / Render / Fly.io
+
+1. Fork this repo and connect it in the platform dashboard
+2. Set environment variables in the platform dashboard
+3. Build command: `npm install`
+4. Start command: `npm start`
+5. Run `npm run deploy` once locally to register slash commands
+
+### Replit
+
+1. Import this repo into Replit
+2. Add Secrets: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`
+3. The `Itsuki Bot` workflow runs `npm start` automatically
 
 ---
 
 ## License
 
-MIT — do whatever you want with it.
+[MIT](LICENSE) — free to use, modify, and distribute.
